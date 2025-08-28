@@ -44,11 +44,10 @@ router.post('/', upload.single('file'), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: 'No file uploaded' });
     }
-    console.log("here " , process.env.AWS_ACCESS_KEY_ID)
     const s3 = new AWS.S3({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID ,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ,
+  region: process.env.AWS_REGION ,
 });
     const bucket = process.env.AWS_S3_BUCKET;
     const key = `uploads/${Date.now()}_${req.file.originalname}`;
