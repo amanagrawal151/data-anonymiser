@@ -19,12 +19,34 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-// catch 404 and forward to error handler
+// S3 route
 const s3Router = require('./routes/s3');
 app.use('/api/s3', s3Router);
+
+// Upload route
+const uploadRouter = require('./routes/upload');
+app.use('/api/upload', uploadRouter);
+
+// Swagger setup
+const swaggerUi = require('swagger-ui-express');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Data Anonymiser API',
+      version: '1.0.0',
+    },
+  },
+  apis: ['./routes/*.js'],
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use(function(req, res, next) {
   next(createError(404));
 });
