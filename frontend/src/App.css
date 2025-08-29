@@ -27,6 +27,25 @@
 .App-link {
   color: #61dafb;
 }
+.navbar-item,
+.navbar-link,
+.dropdown-item {
+  cursor: pointer;
+}
+.navbar-link:hover,
+.dropdown-item:hover {
+  cursor: pointer;
+  color: red !important;
+}
+.material-icons.px-16px {
+  cursor: pointer;
+}
+.material-icons.px-16px:hover {
+  color: red;
+}
+.navbar-toolbar .dropdown-menu-end[aria-labelledby="accountDropdown"] {
+  margin-top: 18px !important;
+}
 
 @keyframes App-logo-spin {
   from {
