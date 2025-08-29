@@ -11,6 +11,47 @@
       content="Web site created using create-react-app"
     />
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+    <!-- Load env variables -->
+        <!-- prevent IE8/9 browsers -->
+        <script src="https://shared.sgmarkets.com/outdated_browsers/outdated-browsers.min.js"></script>
+        <script src="https://d3js.org/d3.v3.min.js"></script>
+        <script>
+            OutdatedBrowsers.check({
+                notAllowedBrowsers: {
+                    ie: '<= 10',
+                },
+                page: {
+                    applicationTitle: 'White app react',
+                    type: 'internal',
+                },
+            });
+        </script>
+
+        <script
+            type="text/javascript"
+            src="https://shared.sgmarkets.com/widgets/sgwt-widget-polyfills/sgwt-widget-polyfill-webcomponent.js"
+        ></script>
+
+        <script>
+            window.SGWTWidgetConfiguration = {
+                environment: window.env.ENVIRONMENT,
+            };
+        </script>
+
+        <!-- Import main SGWT Widgets -->
+        <script
+            type="text/javascript"
+            src="https://shared.sgmarkets.com/widgets/sgwt-connect/v4/sgwt-connect.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="https://shared.sgmarkets.com/widgets/sgwt-account-center/v4/sgwt-account-center.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="https://shared.sgmarkets.com/widgets/sgwt-mini-footer/v4/sgwt-mini-footer.js"
+        ></script>
     <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
