@@ -1,0 +1,417 @@
+{
+  "full_name": [
+    "Jean-Baptiste Dubois",
+    "Marie-Claire Lefebvre",
+    "O'Connor, Patrick Michael",
+    "Smith-Johnson, Sarah Elizabeth",
+    "François Müller",
+    "Dr. Elizabeth Mae Thompson-Ward",
+    "José María García-López",
+    "李小明 (Li Xiaoming)",
+    "Jean d'Arc",
+    "Van Der Berg, Johannes",
+    "MacPherson, Fiona Rose",
+    "DeAngelo, Anthony James III",
+    "St. Pierre, Marie-Josée",
+    "O'Malley-Brown, Siobhan",
+    "Jean-Luc Picard-Dubois"
+  ],
+  
+  "alias": [
+    "Johnny Thunder",
+    "La Panthère Rose",
+    "TechNinja2024",
+    "BluePhoenix",
+    "Le Corbeau Noir",
+    "SilverWolf_QC",
+    "RedMapleDreamer",
+    "NightOwl47",
+    "CaféConnoisseur",
+    "MountainHiker_MTL"
+  ],
+  
+  "account_name": [
+    "jdubois2024",
+    "marie.lefebvre",
+    "p.oconnor_88",
+    "sarah_sj_2023",
+    "f_muller_dev",
+    "dr_thompson_ward",
+    "jmgarcia.lopez",
+    "j.darc_official",
+    "johannes.vdb",
+    "fmacpherson.rose",
+    "a.deangelo3rd",
+    "mj_stpierre",
+    "siobhan.omalley-b",
+    "jl.picard.dubois"
+  ],
+  
+  "social_security_number": [
+    "123-45-6789",
+    "987-65-4321",
+    "555-44-3333",
+    "111-22-3333",
+    "999-88-7777",
+    "000-12-3456",
+    "123-00-7890",
+    "456-78-9012"
+  ],
+  
+  "taxpayer_identification_number": [
+    "123456789",
+    "987654321",
+    "555443333",
+    "111223333",
+    "999887777",
+    "12-3456789",
+    "98-7654321"
+  ],
+  
+  "national_id_number": [
+    "1234567890123",
+    "FRAA12345678901",
+    "CAN123456789",
+    "123 456 789 012",
+    "AB-123456-C",
+    "1 23 45 67890 123 45",
+    "FR-1234567890123"
+  ],
+  
+  "passport_number": [
+    "A12345678",
+    "FR1234567",
+    "CA9876543",
+    "123456789",
+    "P12345678",
+    "FR-AB123456",
+    "CAN-987654321",
+    "A-1234567-B"
+  ],
+  
+  "drivers_license_number": [
+    "D123456789",
+    "QC-12345-67890-123",
+    "ON-A1234-56789-012",
+    "FR-123ABC456DEF",
+    "BC123456789",
+    "AB-1234-5678",
+    "DL123456789012",
+    "12-ABC-345-DEF-67"
+  ],
+  
+  "government_id_number": [
+    "GOV123456789",
+    "FR-GOV-123456",
+    "CAN-ID-987654",
+    "GID123456789012",
+    "GOVT-AB123456",
+    "ID-FR-123456789",
+    "CANID-123456789"
+  ],
+  
+  "certificate_number": [
+    "CERT-123456789",
+    "FR-CERT-ABC123",
+    "CAN-123456-CERT",
+    "C123456789012",
+    "CERTIFICATE-FR123",
+    "123456-CERT-789",
+    "CERT/123/456/789"
+  ],
+  
+  "professional_license_number": [
+    "MD123456789",
+    "RN-FR-123456",
+    "ENG-CAN-987654",
+    "LAW123456789",
+    "PROF-123456-FR",
+    "LIC-123456789012",
+    "PL/123456/CAN"
+  ],
+  
+  "medical_record_number": [
+    "MRN123456789",
+    "MED-123456-FR",
+    "HSP123456789012",
+    "MR-123456-789",
+    "HOSP-123456-CAN",
+    "123456-MED-789",
+    "MRN/123/456/789"
+  ],
+  
+  "health_plan_beneficiary_number": [
+    "HPN123456789",
+    "ASSUR-FR-123456",
+    "HEALTH-123456-CAN",
+    "HP123456789012",
+    "BEN-123456-789",
+    "HEALTH/123/456/789",
+    "RAMQ-123456789"
+  ],
+  
+  "financial_account_number": [
+    "ACC123456789012",
+    "FA-123456-789012",
+    "FIN123456789012345",
+    "ACCT-123456-789",
+    "123456789012345678"
+  ],
+  
+  "bank_account_number": [
+    "1234567890",
+    "12345-67890",
+    "123456789012",
+    "1234-5678-9012",
+    "FR1234567890123456789012345",
+    "CA123456789012345",
+    "00123456789",
+    "123456-789-012"
+  ],
+  
+  "credit_card_number": [
+    "4111-1111-1111-1111",
+    "5555-5555-5555-4444",
+    "3782-822463-10005",
+    "6011-1111-1111-1117",
+    "4000-0000-0000-0002",
+    "5105-1051-0510-5100"
+  ],
+  
+  "debit_card_number": [
+    "4000-1234-5678-9010",
+    "5432-1098-7654-3210",
+    "4532-1234-5678-9012",
+    "5555-4444-3333-2222"
+  ],
+  
+  "account_number": [
+    "123456789",
+    "ACC-123456-789",
+    "12345678901234",
+    "A123456789B",
+    "123-456-789-012"
+  ],
+  
+  "email_address": [
+    "jean.dubois@email.com",
+    "marie-claire.lefebvre@gmail.com",
+    "p.oconnor+work@yahoo.fr",
+    "sarah.smith-johnson@outlook.com",
+    "francois.muller@company.co.uk",
+    "dr.thompson.ward@hospital.org",
+    "jose.garcia-lopez@universidad.es",
+    "jean.darc@test-domain.net",
+    "johannes.vanderberg@bedrijf.nl",
+    "fiona.macpherson123@mail.ca",
+    "anthony.deangelo.iii@law-firm.com",
+    "marie-josee.st.pierre@gouv.qc.ca",
+    "siobhan.omalley-brown@tech.startup.io",
+    "jean-luc.picard.dubois@enterprise.space",
+    "user+tag@domain.co.fr",
+    "test.email+123@sub.domain.org",
+    "firstname_lastname@hyphen-domain.com"
+  ],
+  
+  "phone_number": [
+    "+1-514-123-4567",
+    "514.123.4567",
+    "(514) 123-4567",
+    "514-123-4567",
+    "15141234567",
+    "+33 1 23 45 67 89",
+    "01.23.45.67.89",
+    "01 23 45 67 89",
+    "+1 (800) 123-4567",
+    "1-888-123-4567",
+    "+33-123456789",
+    "514 123 4567",
+    "(514)123-4567",
+    "+1.514.123.4567"
+  ],
+  
+  "fax_number": [
+    "+1-514-123-4568",
+    "514.123.4568",
+    "(514) 123-4568",
+    "+33 1 23 45 67 90",
+    "01.23.45.67.90",
+    "1-888-123-4568"
+  ],
+  
+  "physical_address": [
+    "123 Rue Saint-Denis, Montréal, QC H2X 3K8, Canada",
+    "456 Avenue des Champs-Élysées, 75008 Paris, France",
+    "789 Main Street, Apartment 4B, Toronto, ON M5V 2T6, Canada",
+    "12 Rue de la Paix, 75002 Paris, France",
+    "555 Boulevard Saint-Laurent, Suite 200, Montréal, QC H2Y 2Y4, Canada",
+    "78 Avenue Montaigne, 75008 Paris, France",
+    "234 Queen Street West, Unit 15, Toronto, ON M5H 1B6, Canada",
+    "45 Rue du Faubourg Saint-Honoré, 75008 Paris, France",
+    "P.O. Box 1234, Montréal, QC H3A 0G4, Canada",
+    "1001 Rue Sherbrooke Ouest, Montréal, QC H3A 1G5, Canada"
+  ],
+  
+  "geolocation_data": [
+    "45.5017° N, 73.5673° W",
+    "48.8566° N, 2.3522° E",
+    "43.6532° N, 79.3832° W",
+    "lat: 45.5017, lng: -73.5673",
+    "48.8566, 2.3522",
+    "(45.5017, -73.5673)",
+    "45°30'06.1\"N 73°34'02.3\"W",
+    "48°51'23.8\"N 2°21'07.9\"E"
+  ],
+  
+  "ip_address": [
+    "192.168.1.1",
+    "10.0.0.1",
+    "172.16.0.1",
+    "203.0.113.1",
+    "198.51.100.1",
+    "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+    "2001:db8::1",
+    "fe80::1",
+    "127.0.0.1",
+    "::1"
+  ],
+  
+  "device_serial_number": [
+    "ABC123DEF456",
+    "SN123456789012",
+    "DEV-ABC-123-456",
+    "12345ABCDE67890",
+    "SERIAL123456789",
+    "A1B2C3D4E5F6",
+    "SER/123/ABC/456",
+    "123456-ABC-789"
+  ],
+  
+  "mac_address": [
+    "00:1B:44:11:3A:B7",
+    "02:00:4C:4F:4F:50",
+    "00-14-22-01-23-45",
+    "001B.4411.3AB7",
+    "aa:bb:cc:dd:ee:ff",
+    "12:34:56:78:9a:bc"
+  ],
+  
+  "personal_web_url": [
+    "https://jean-dubois.com",
+    "http://marie-lefebvre.fr",
+    "https://p-oconnor.ca/portfolio",
+    "http://sarahsmith-johnson.org",
+    "https://francois-muller.dev",
+    "http://dr-thompson-ward.med",
+    "https://josegarcia.es/blog",
+    "http://jean-darc.net/about",
+    "https://johannes-vanderberg.nl",
+    "http://fiona-macpherson.ca/resume"
+  ],
+  
+  "unique_personal_identifier": [
+    "UUID:123e4567-e89b-12d3-a456-426614174000",
+    "UID-123456-789012",
+    "PID:ABC123DEF456GHI789",
+    "USER-123456-ABCDEF",
+    "ID:12345678-90AB-CDEF-1234-567890ABCDEF",
+    "UNIQUE-123456789012",
+    "PERSON-ID-123456"
+  ],
+  
+  "biometric_identifiers": [
+    "FINGERPRINT:ABC123456789DEF",
+    "RETINA:123456789012345",
+    "IRIS:ABCDEF123456789",
+    "FACE:123ABC456DEF789",
+    "VOICE:PRINT123456789",
+    "DNA:ATCG123456789012"
+  ],
+  
+  "vehicle_registration_number": [
+    "ABC-123",
+    "123-ABC",
+    "ABC 123",
+    "123 ABC",
+    "12A BC3",
+    "A12-B3C",
+    "QC-123456",
+    "ON-ABCD123"
+  ],
+  
+  "employment_information": [
+    "Software Developer at TechCorp Inc.",
+    "Médecin à l'Hôpital Général de Montréal",
+    "Marketing Manager, Startup Innovation Ltd.",
+    "Professeur à l'Université de Montréal",
+    "Senior Consultant, Business Solutions Corp.",
+    "Infirmière à l'Hôpital Sainte-Justine",
+    "Data Analyst, Financial Services Group",
+    "Avocat chez Cabinet Juridique Dubois & Associés"
+  ],
+  
+  "browsing_history": [
+    "https://www.google.com/search?q=weather+montreal",
+    "https://www.amazon.ca/electronics/laptops",
+    "https://www.linkedin.com/in/jean-dubois",
+    "https://www.facebook.com/marie.lefebvre",
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    "https://www.reddit.com/r/programming",
+    "https://stackoverflow.com/questions/javascript",
+    "https://www.netflix.com/browse"
+  ],
+  
+  "search_history": [
+    "best restaurants montreal",
+    "comment faire une pâte à crêpes",
+    "python programming tutorial",
+    "weather forecast toronto",
+    "meilleurs hôtels paris",
+    "how to fix wifi connection",
+    "recette tarte aux pommes"
+  ],
+  
+  "internet_activity": [
+    "Visited shopping websites: 45 minutes",
+    "Social media browsing: 2 hours 15 minutes",
+    "Video streaming: 3 hours 30 minutes",
+    "Online banking: 15 minutes",
+    "Email checking: 45 minutes",
+    "News reading: 1 hour 20 minutes"
+  ],
+  
+  "app_interactions": [
+    "WhatsApp: 50 messages sent",
+    "Instagram: 25 photos liked",
+    "Spotify: 3 hours music streaming",
+    "Uber: 2 rides booked",
+    "Banking App: Account balance checked",
+    "Weather App: 5 location checks"
+  ],
+  
+  "website_interactions": [
+    "Amazon.ca: Added 3 items to cart",
+    "LinkedIn: Updated profile, sent 5 connection requests",
+    "YouTube: Watched 8 videos, subscribed to 2 channels",
+    "Facebook: Posted 1 status, commented on 5 posts",
+    "Netflix: Watched 2 episodes, added 3 shows to watchlist"
+  ],
+  
+  "inferences_profile": [
+    "Age range: 25-34, Income: $50,000-$75,000, Interests: Technology",
+    "Âge: 35-44 ans, Revenus: 60 000$-80 000$, Intérêts: Cuisine, Voyage",
+    "Demographics: Urban professional, Tech-savvy, Health-conscious",
+    "Profil: Jeune parent, Intérêts familiaux, Shopping en ligne fréquent",
+    "Lifestyle: Active social media user, Entertainment focused"
+  ],
+  
+  "unique_identifying_code": [
+    "CODE-123456-ABCDEF",
+    "ID:ABC123DEF456",
+    "UNIQUE-789012-XYZ",
+    "USER123456789",
+    "IDENT-ABC-123-DEF",
+    "CODE/123/ABC/456",
+    "ID-123456-789012"
+  ]
+}
