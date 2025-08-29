@@ -1,25 +1,16 @@
-import logo from './logo.svg';
-import './App.css';
-
-function App() {
+import "./App.css";
+import "@sg-bootstrap/icons/dist/index.css";
+import '@sg-bootstrap/core/dist/css/sg-bootstrap-standard.min.css';
+import Navbar from "./components/navbar";
+import FileUploader from "./components/file-uploader";
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+    <Navbar />
+    <FileUploader />
+    </>
   );
-}
+};
 
 export default App;
+
