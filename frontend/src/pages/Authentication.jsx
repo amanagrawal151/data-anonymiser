@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const securityIcoStyle = {
   minWidth: "3rem",
@@ -15,6 +16,8 @@ const securityIcoActiveStyle = {
 };
 
 const Auth = () => {
+  const navigate = useNavigate();
+  const handleNavigateHome = () => navigate("/home");
   return (
     <div className="container">
       <div className="row">
@@ -35,7 +38,7 @@ const Auth = () => {
             </div>
             <div className="alert text-secondary d-flex fs-5 p-0 mt-2 mb-3 gap-2" role="alert">
               <i className="icon icon-outlined icon-sm lh-1">info</i>
-              You’re signed in as john.smith@sgcib.com and the service that you are trying to access requires additional authentication.
+              You’re signed in as aman.agrawal@socgen.com and the service that you are trying to access requires additional authentication.
             </div>
             <ul className="list-group list-group-flush border-top border-opacity-50">
               <li className="list-group-item list-group-item-action d-flex border-bottom border-opacity-50 px-12px gap-12px">
@@ -50,7 +53,7 @@ const Auth = () => {
                     </div>
                     <div className="flex py-2">
                       <div className="btn-group">
-                        <button className="btn btn-flat-primary btn-icon"><i className="icon icon-md">arrow_forward</i></button>
+                        <button className="btn btn-flat-primary btn-icon" onClick={handleNavigateHome}><i className="icon icon-md">arrow_forward</i></button>
                       </div>
                     </div>
                   </div>
@@ -68,7 +71,7 @@ const Auth = () => {
                     </div>
                     <div className="flex py-2">
                       <div className="btn-group">
-                        <button className="btn btn-flat-primary btn-icon"><i className="icon icon-md">arrow_forward</i></button>
+                        <button className="btn btn-flat-primary btn-icon" onClick={handleNavigateHome}><i className="icon icon-md">arrow_forward</i></button>
                       </div>
                     </div>
                   </div>
@@ -86,7 +89,7 @@ const Auth = () => {
                     </div>
                     <div className="flex py-2">
                       <div className="btn-group">
-                        <button className="btn btn-flat-primary btn-icon"><i className="icon icon-md">arrow_forward</i></button>
+                        <button className="btn btn-flat-primary btn-icon" onClick={handleNavigateHome}><i className="icon icon-md">arrow_forward</i></button>
                       </div>
                     </div>
                   </div>
@@ -107,72 +110,3 @@ const Auth = () => {
 };
 
 export default Auth;
-//             <div class="d-flex flex-column flex-grow-1">
-//               <div class="d-flex flex-row">
-//                 <div class="flex-grow-1 d-grid gap-1 py-1">
-//                   <h6>Secure Access</h6>
-//                   <p class="text-secondary">Verify using Secure Access app on your device</p>
-//                 </div>
-//                 <div class="flex py-2">
-//                   <div class="btn-group">
-//                     <button class="btn btn-flat-primary btn-icon"><i class="icon icon-md">arrow_forward</i></button>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </li>
-//           <li class="list-group-item list-group-item-action d-flex border-bottom border-opacity-50 px-12px gap-12px">
-//             <div class="security-ico rounded-circle">
-//               <em class="icon icon-outlined line-height-1">
-//                 assignment_ind
-//               </em>
-//             </div>
-//             <div class="d-flex flex-column flex-grow-1">
-//               <div class="d-flex flex-row">
-//                 <div class="flex-grow-1 d-grid gap-1 py-1">
-//                   <h6>SG Unipass</h6>
-//                   <p class="text-secondary">Verify using your SG Unipass credentials</p>
-//                 </div>
-//                 <div class="flex py-2">
-//                   <div class="btn-group">
-//                     <button class="btn btn-flat-primary btn-icon"><i class="icon icon-md">arrow_forward</i></button>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </li>
-//           <li class="list-group-item list-group-item-action d-flex border-bottom border-opacity-50 px-12px gap-12px">
-//             <div class="security-ico rounded-circle">
-//               <em class="icon icon-outlined line-height-1">
-//                 gpp_good
-//               </em>
-//             </div>
-//             <div class="d-flex flex-column flex-grow-1">
-//               <div class="d-flex flex-row">
-//                 <div class="flex-grow-1 d-grid gap-1 py-1">
-//                   <h6>Trust builder / Inwebo</h6>
-//                   <p class="text-secondary">Verify using your Trust builder or Inwebo authenticator</p>
-//                 </div>
-//                 <div class="flex py-2">
-//                   <div class="btn-group">
-//                     <button class="btn btn-flat-primary btn-icon"><i class="icon icon-md">arrow_forward</i></button>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </li>
-//         </ul>
-//         <div class="d-block d-grid gap-2 py-4">
-//           <a href="#" class="">
-//             I can not use any of these method
-//           </a>
-//         </div>
-//       </div>
-//     </div>
-//     <div class="col"></div>
-//   </div>
-// </div>
-//     </>
-//     )
-    
-// }

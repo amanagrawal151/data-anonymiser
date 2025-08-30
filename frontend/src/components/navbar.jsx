@@ -1,4 +1,13 @@
-const Navbar = () => {
+import { useNavigate } from "react-router-dom";
+
+const Navbar = ({ setShow }) => {
+  const navigate = useNavigate();
+
+  const handleSignOut = (e) => {
+    e.preventDefault();
+    console.log("logging out")
+    navigate("/auth");
+  };
   return (
     <nav class="navbar navbar-navbar-md border-bottom border-top">
       <div class="navbar-title">
@@ -50,7 +59,7 @@ const Navbar = () => {
       <div class="navbar-content navbar-content-">
         <ul class="navbar-navigation m-0">
           <li class="navbar-item">
-            <a class="navbar-link active" aria-current="page">
+            <a class="navbar-link active" href="/" aria-current="page">
               Home
             </a>
           </li>
@@ -58,10 +67,7 @@ const Navbar = () => {
             <a class="navbar-link">Link</a>
           </li> */}
           <li class="navbar-item">
-            <a class="navbar-link">Dashboard</a>
-          </li>
-          <li class="navbar-item">
-            <a class="navbar-link">Profile</a>
+            <a class="navbar-link" href="/dashboard">Dashboard</a>
           </li>
           <li class="navbar-item dropdown">
             <a
@@ -88,7 +94,12 @@ const Navbar = () => {
               </li>
             </ul>
           </li>
+                <li class="navbar-item">
+            <a class="navbar-link" href="/profile">Notifications</a>
+          </li>
         </ul>
+    
+          
         <div class="input-group ms-auto" style={{ maxWidth: "500px" }}>
           <div class="input-icon-start">
             <em class="icon">search</em>
@@ -119,13 +130,13 @@ const Navbar = () => {
           aria-labelledby="accountDropdown"
         >
           <li>
-            <a class="dropdown-item">Profile</a>
+            <a class="dropdown-item" onClick={() => setShow(true)}>Profile</a>
           </li>
           <li>
-            <a class="dropdown-item">Dashboard</a>
+            <a class="dropdown-item" href="/notifications">Notifications</a>
           </li>
           <li>
-            <a class="dropdown-item">Sign Out</a>
+            <a class="dropdown-item" href="#" onClick={handleSignOut}>Sign Out</a>
           </li>
         </ul>
       </div>

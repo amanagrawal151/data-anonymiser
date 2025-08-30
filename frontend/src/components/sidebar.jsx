@@ -1,12 +1,15 @@
-const Sidebar = () => {
+import React from "react";
+
+const Sidebar = ({ show, setShow }) => {
+  if (!show) return null;
   return (
     <>
       <nav class="navbar navbar-sm border-bottom">
         <div class="navbar-toolbar">
           <div class="user-toolbar">
             <header class="d-flex align-items-center justify-content-end ac">
-              <p class="badge badge-discreet-primary badge-prepend-square me-1">
-                Trader EMEA
+              <p class="badge badge-discreet-warning badge-prepend-square me-1">
+                Admin
               </p>
               <p class="badge badge-discreet-primary badge-prepend-square me-1">
                 Reader
@@ -94,7 +97,7 @@ const Sidebar = () => {
           <div class="d-flex justify-content-between align-items-center">
             <h2 class="h4 m-0">My account</h2>
             <span>
-              <button type="button" class="btn-close"></button>
+              <button type="button" class="btn-close" aria-label="Close" onClick={() => setShow(false)}></button>
             </span>
           </div>
         </div>
@@ -113,18 +116,18 @@ const Sidebar = () => {
             class="ml-3 ms-3 align-self-center"
             style={{ maxWidth: "300px" }}
           >
-            <h3 class="h6 mb-1 text-capitalize">John DOE</h3>
-            <div class="mb">john.doe@sgcib.com</div>
-            <p class="badge badge-discreet-primary badge-prepend-square mt-1">
-              Trader EMEA
+            <h3 class="h6 mb-1 text-capitalize">Aman Agrawal</h3>
+            <div class="mb">aman.agrawal@socgen.com</div>
+            <p class="badge badge-discreet-warning badge-prepend-square mt-1">
+             Admin
             </p>
-            <p class="badge badge-discreet-primary badge-prepend-square mt-1">
+            {/* <p class="badge badge-discreet-primary badge-prepend-square mt-1">
               Reader
-            </p>
+            </p> */}
           </div>
         </div>
 
-        <li class="list-group-item dropdown border-top border-opacity-40 p-0">
+        {/* <li class="list-group-item dropdown border-top border-opacity-40 p-0">
           <button
             class="btn btn-flat-primary btn-block flex-between ps-16px pe-12px py-12px"
             data-toggle="tooltip"
@@ -133,16 +136,16 @@ const Sidebar = () => {
           >
             <div class="d-flex align-items-center gap-8px">
               <i class="icon icon-sm text-secondary">public</i>
-              <p class="text-secondary fw-medium">Default region</p>
+              <p class="text-secondary fw-medium">Team</p>
             </div>
             <div class="d-flex align-items-center gap-8px">
               <p>EMEA</p>
               <i class="icon icon-sm">arrow_drop_down</i>
             </div>
           </button>
-        </li>
+        </li> */}
 
-        <li class="list-group-item dropdown border-top border-opacity-40 p-0">
+        {/* <li class="list-group-item dropdown border-top border-opacity-40 p-0">
           <button class="btn btn-flat-primary btn-block flex-between ps-16px pe-12px py-12px">
             <div class="d-flex align-items-center gap-8px">
               <i class="icon icon-sm text-secondary">brightness_4</i>
@@ -153,7 +156,7 @@ const Sidebar = () => {
               <i class="icon icon-sm">arrow_drop_down</i>
             </div>
           </button>
-        </li>
+        </li> */}
         {/* </ul> */}
 
         <ul class="d-flex flex-wrap mx-4 list-unstyled row-cols-1">
@@ -165,10 +168,10 @@ const Sidebar = () => {
               title="The region loaded by default when accessing the Check360 UI"
             >
               <div>
-                <i class="icon icon-sm text-secondary">public</i>
-                Default region
+                <i className="icon icon-sm text-secondary">public</i>
+                    Department
               </div>
-              <div>EMEA</div>
+              <div>GSCIN-GCO-CFT-RRR</div>
             </button>
           </li>
           <li class="pr-1 pe-1 w-100">
@@ -200,8 +203,8 @@ const Sidebar = () => {
         {/* <!-- Account card starts here --> */}
         <div class="px-24px pb-24px">
           <section class="bg-lvl2">
-            <article class="flex-between pb-16px p-16px">
-              <div class="w-75">
+            {/* <article class="flex-between pb-16px p-16px"> */}
+              {/* <div class="w-75">
                 <h5 class="text-capitalize pb-4px">John DOE</h5>
                 <p>john.doe@sgcib.com</p>
                 <div class="mt-2">
@@ -250,7 +253,7 @@ const Sidebar = () => {
                   </div>
                 </button>
               </li>
-            </ul>
+            </ul> */}
 
             <article class="bg-lvl3">
               <button class="btn btn-flat btn-block btn-lg btn-icon-start">
@@ -289,18 +292,17 @@ const Sidebar = () => {
                       borderRadius: "10px",
                     }}
                   >
-                    <span class="fw-medium">I</span>
+                    <span class="fw-medium">F</span>
                   </div>
                   <div>
-                    <div class="font-weight-semibold fw-semibold line-height-1 mb-1">
-                      SG Markets Integration
+                    <div class="font-weight-semibold text-success fw-semibold line-height-1 mb-1">
+                      Encryption successful 
                     </div>
                     <div class="text-small fs-6 ">about 3 hours</div>
                   </div>
                 </div>
                 <p class="my-0 py-3 text-secondary border-bottom">
-                  A new task has been assigned to you for the integration of
-                  Manual Journal Entries
+                  A file recently uploaded by you is successfully encrypted.
                 </p>
               </a>
               <a
@@ -319,14 +321,14 @@ const Sidebar = () => {
                     <span class="fw-medium">I</span>
                   </div>
                   <div>
-                    <div class="font-weight-semibold fw-semibold line-height-1 mb-1">
-                      SG Markets Integration
+                    <div class="font-weight-semibold text-danger fw-semibold line-height-1 mb-1">
+                      Decryption Failure
                     </div>
                     <div class="text-small fs-6 ">about 1 month</div>
                   </div>
                 </div>
                 <p class="my-0 py-3 text-secondary border-bottom">
-                  6 uncomplete tasks awaiting for you
+                  Decryption failed due to invalid key.
                 </p>
               </a>
               <a
