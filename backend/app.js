@@ -15,6 +15,9 @@ var app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
+const connectDB = require('./models/db');
+connectDB();
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -26,6 +29,11 @@ app.use('/', indexRouter);
 // S3 route
 const s3Router = require('./routes/s3');
 app.use('/api/s3', s3Router);
+
+
+// User route
+const userRouter = require('./routes/user');
+app.use('/api/users', userRouter);
 
 // Upload route
 const uploadRouter = require('./routes/upload');
