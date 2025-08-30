@@ -33,6 +33,10 @@ app.use('/api/s3', s3Router);
 
 // User route
 const userRouter = require('./routes/user');
+
+// File route
+const fileRouter = require('./routes/file');
+app.use('/api/files', fileRouter);
 app.use('/api/users', userRouter);
 
 // Upload route
