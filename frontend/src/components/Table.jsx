@@ -53,19 +53,48 @@ const Table = () => {
             </div>
             <section className="flex-x gap-8px">
               <p className="fw-medium">Active filters</p>
-              <span className="badge badge-discreet-info badge-md badge-dismissible ">
-                <button type="button" className="btn">
-                  <em className="icon">close</em>
+              {fileType && (
+                <span className="badge badge-discreet-info badge-md badge-dismissible ">
+                  <button type="button" className="btn" onClick={() => setFileType("")}> 
+                    <em className="icon">close</em>
+                  </button>
+                  {fileType}
+                </span>
+              )}
+              {fileStatus && (
+                <span className="badge badge-discreet-info badge-md badge-dismissible ">
+                  <button type="button" className="btn" onClick={() => setFileStatus("")}> 
+                    <em className="icon">close</em>
+                  </button>
+                  {fileStatus}
+                </span>
+              )}
+              {startDate && (
+                <span className="badge badge-discreet-info badge-md badge-dismissible ">
+                  <button type="button" className="btn" onClick={() => setStartDate("")}> 
+                    <em className="icon">close</em>
+                  </button>
+                  Start: {startDate}
+                </span>
+              )}
+              {endDate && (
+                <span className="badge badge-discreet-info badge-md badge-dismissible ">
+                  <button type="button" className="btn" onClick={() => setEndDate("")}> 
+                    <em className="icon">close</em>
+                  </button>
+                  End: {endDate}
+                </span>
+              )}
+              {(fileType || fileStatus || startDate || endDate) && (
+                <button className="btn btn-link btn-sm" onClick={() => {
+                  setFileType("");
+                  setFileStatus("");
+                  setStartDate("");
+                  setEndDate("");
+                }}>
+                  Clear all
                 </button>
-                Exchange BDR ID: 1
-              </span>
-              <span className="badge badge-discreet-info badge-md badge-dismissible ">
-                <button type="button" className="btn">
-                  <em className="icon">close</em>
-                </button>
-                Client Booking Account ID: 2
-              </span>
-              <button className="btn btn-link btn-sm">Clear all</button>
+              )}
             </section>
             <div className="collapse" id="collapseExample">
               <div className="d-flex flex-row justify-content-evenly">
@@ -100,32 +129,6 @@ const Table = () => {
                         <option value="pending">Pending</option>
                       </select>
                     </div>
-
-                    <label htmlFor="startDate" className="form-label mb-4px">
-                      Start Date
-                    </label>
-                    <div className="form-group">
-                      <input
-                        type="date"
-                        id="startDate"
-                        className="form-control"
-                        value={startDate}
-                        onChange={e => setStartDate(e.target.value)}
-                      />
-                    </div>
-
-                    <label htmlFor="endDate" className="form-label mb-4px">
-                      End Date
-                    </label>
-                    <div className="form-group">
-                      <input
-                        type="date"
-                        id="endDate"
-                        className="form-control"
-                        value={endDate}
-                        onChange={e => setEndDate(e.target.value)}
-                      />
-                    </div>
                   </div>
                 </div>
 
@@ -134,9 +137,29 @@ const Table = () => {
                   style={{ width: "25%" }}
                 >
                   <div
-                    className="form-group d-flex flex-row align-items-center justify-content-between"
+                    className="form-group d-flex flex-column align-items-start justify-content-between"
                     style={{ width: "230px" }}
                   >
+                    <label htmlFor="startDate" className="form-label mb-4px">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      className="form-control mb-2"
+                      value={startDate}
+                      onChange={e => setStartDate(e.target.value)}
+                    />
+                    <label htmlFor="endDate" className="form-label mb-4px mt-2">
+                      End Date
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      className="form-control"
+                      value={endDate}
+                      onChange={e => setEndDate(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>

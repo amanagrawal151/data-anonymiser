@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 
 
-const FileUploader = () => {
+const FileUploader = ({ onUpload }) => {
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -76,8 +76,9 @@ const FileUploader = () => {
           className="btn btn-primary mt-3"
           disabled={!selectedFile}
           onClick={() => {
-            // Add your upload logic here
-            alert(selectedFile ? `Uploading: ${selectedFile.name}` : "No file selected");
+            if (selectedFile && onUpload) {
+              onUpload(selectedFile.name);
+            }
           }}
         >
           Upload

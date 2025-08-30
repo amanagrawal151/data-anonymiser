@@ -39,6 +39,15 @@ const fileRouter = require('./routes/file');
 app.use('/api/files', fileRouter);
 app.use('/api/users', userRouter);
 
+
+// Stats route
+const statsRouter = require('./routes/stats');
+app.use('/api/stats', statsRouter);
+
+// Crypt route
+const cryptRouter = require('./routes/crypt');
+app.use('/api/crypt', cryptRouter);
+
 // Upload route
 const uploadRouter = require('./routes/upload');
 app.use('/api/upload', uploadRouter);

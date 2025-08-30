@@ -95,7 +95,7 @@ const Navbar = ({ setShow }) => {
             </ul>
           </li>
                 <li class="navbar-item">
-            <a class="navbar-link" href="/profile">Notifications</a>
+            <a class="navbar-link" href="/notifications">Notifications</a>
           </li>
         </ul>
     
