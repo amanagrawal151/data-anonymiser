@@ -9,6 +9,7 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+import Table from "../components/Table";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
@@ -62,6 +63,7 @@ const Dashboard = ({
     };
 
     return (
+        <>
         <div className="container py-5">
             <h2 className="mb-4 text-center">Dashboard Statistics</h2>
             <div className="row g-4 justify-content-center">
@@ -85,6 +87,7 @@ const Dashboard = ({
                 </div>
             </div>
         </div>
+        <Table /></>
     );
 };
 
