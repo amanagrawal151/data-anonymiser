@@ -1,7 +1,7 @@
 const Footer = () => {
     return (<>
     <footer class="sgbs-footer-light border-top d-flex justify-content-between p-3">
- <span class="sgbs-footer-item h6 mb-0 fw-normal">© Societe Generale Group 2023</span>
+ <span class="sgbs-footer-item h6 mb-0 fw-normal">© Societe Generale Group 2025</span>
     <ul class="list-unstyled d-flex mb-0">
       <li class="ms-3">
         <a class="sgbs-footer-item h6 mb-0 fw-normal" href="#compact">About

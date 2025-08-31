@@ -6,9 +6,39 @@ const FileUploader = ({ onUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
 
+
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
-    // You can call your upload logic here
+  };
+
+  const uploadToS3 = async () => {
+    if (!selectedFile) return;
+    // 1. Call backend to get pre-signed URL
+    const res = await fetch('http://localhost:3000/api/s3/sign-url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: selectedFile.name,
+        contentType: selectedFile.type || 'application/octet-stream',
+      }),
+    });
+    if (!res.ok) {
+      alert('Failed to get upload URL');
+      return;
+    }
+    const { url } = await res.json();
+    // 2. Upload file to S3
+    const uploadRes = await fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': selectedFile.type || 'application/octet-stream' },
+      body: selectedFile,
+    });
+    if (uploadRes.ok) {
+      alert('File uploaded successfully!');
+      if (onUpload) onUpload(selectedFile.name);
+    } else {
+      alert('Failed to upload file to S3');
+    }
   };
 
   const handleSelectClick = () => {
@@ -75,11 +105,7 @@ const FileUploader = ({ onUpload }) => {
           type="button"
           className="btn btn-primary mt-3"
           disabled={!selectedFile}
-          onClick={() => {
-            if (selectedFile && onUpload) {
-              onUpload(selectedFile.name);
-            }
-          }}
+          onClick={uploadToS3}
         >
           Upload
         </button>

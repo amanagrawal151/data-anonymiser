@@ -8,7 +8,10 @@ import Footer from "./components/Footer";
 import Auth from "./pages/Authentication";
 import Sidebar from "./components/sidebar";
 import Dashboard from "./pages/Dashboard";
-import Notification from "./pages/Notification"
+import Notification from "./pages/Notification";
+import Guide from "./pages/Guide";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
 
 
 import React, { useState } from "react";
@@ -26,6 +29,9 @@ const App = () => {
         <Route path="/auth" element={<Auth />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/notifications" element={<Notification />} />
+        <Route path="/guide" element={<Guide />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/privacy" element={<Privacy />} />
         {/* Add more routes here as needed */}
       </Routes>
       <Footer />

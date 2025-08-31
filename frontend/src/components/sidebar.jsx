@@ -1,9 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Sidebar = ({ show, setShow }) => {
-  if (!show) return null;
+  const [user, setUser] = useState({ name: '', email: '', department: '' });
+  const [visible, setVisible] = useState(show);
+
+  useEffect(() => {
+    if (show) setVisible(true);
+  }, [show]);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/api/users/me')
+      .then(res => res.json())
+      .then(data => {
+        setUser({
+          name: data.name || '',
+          email: data.email || '',
+          department: data.department || ''
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  const handleClose = () => {
+    setShow(false);
+    setTimeout(() => setVisible(false), 300); // match transition duration
+  };
+
+  if (!visible && !show) return null;
   return (
     <>
+      <style>{`
+        .sidebar-slide {
+          transition: transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s cubic-bezier(.4,0,.2,1);
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        .sidebar-slide.open {
+          transition: transform 0.6s cubic-bezier(.4,0,.2,1), opacity 0.6s cubic-bezier(.4,0,.2,1);
+          transform: translateX(0);
+          opacity: 1;
+        }
+      `}</style>
       <nav class="navbar navbar-sm border-bottom">
         <div class="navbar-toolbar">
           <div class="user-toolbar">
@@ -56,7 +93,7 @@ const Sidebar = ({ show, setShow }) => {
 
                       <div class="text-left justify-content-start text-small ml-2 ms-2 d-none d-md-block align-self-center sgwt-account-center-user-info">
                         <div class="text-capitalize text-truncate font-weight-medium fw-medium sgwt-account-center-user">
-                          John DOE
+                          {user.name || 'User'}
                         </div>
                         <button class="btn-signout border-0 p-0 btn btn-link text-left text-start font-weight-medium fw-medium justify-content-start btn-sm">
                           Sign out
@@ -83,7 +120,7 @@ const Sidebar = ({ show, setShow }) => {
       </nav>
 
       <aside
-        class="card shadow-max sgwt-account-center-panel"
+        className={`card shadow-max sgwt-account-center-panel sidebar-slide${show ? " open" : ""}`}
         style={{
           position: "fixed",
           zIndex: 1035,
@@ -97,7 +134,7 @@ const Sidebar = ({ show, setShow }) => {
           <div class="d-flex justify-content-between align-items-center">
             <h2 class="h4 m-0">My account</h2>
             <span>
-              <button type="button" class="btn-close" aria-label="Close" onClick={() => setShow(false)}></button>
+              <button type="button" class="btn-close" aria-label="Close" onClick={handleClose}></button>
             </span>
           </div>
         </div>
@@ -116,8 +153,8 @@ const Sidebar = ({ show, setShow }) => {
             class="ml-3 ms-3 align-self-center"
             style={{ maxWidth: "300px" }}
           >
-            <h3 class="h6 mb-1 text-capitalize">Aman Agrawal</h3>
-            <div class="mb">aman.agrawal@socgen.com</div>
+            <h3 class="h6 mb-1 text-capitalize">{user.name || 'User'}</h3>
+            <div class="mb">{user.email || 'user@email.com'}</div>
             <p class="badge badge-discreet-warning badge-prepend-square mt-1">
              Admin
             </p>
@@ -171,7 +208,7 @@ const Sidebar = ({ show, setShow }) => {
                 <i className="icon icon-sm text-secondary">public</i>
                     Department
               </div>
-              <div>GSCIN-GCO-CFT-RRR</div>
+              <div>{user.department || 'Department'}</div>
             </button>
           </li>
           <li class="pr-1 pe-1 w-100">

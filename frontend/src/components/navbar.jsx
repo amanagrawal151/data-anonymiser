@@ -1,15 +1,21 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 const Navbar = ({ setShow }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleSignOut = (e) => {
     e.preventDefault();
     console.log("logging out")
     navigate("/auth");
   };
+
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <nav class="navbar navbar-navbar-md border-bottom border-top">
+    <nav className="navbar navbar-navbar-md border-bottom border-top">
       <div class="navbar-title">
         <a class="navbar-title-link">
           <div class="navbar-logo">
@@ -57,45 +63,61 @@ const Navbar = ({ setShow }) => {
         </ul>
       </div>
       <div class="navbar-content navbar-content-">
-        <ul class="navbar-navigation m-0">
-          <li class="navbar-item">
-            <a class="navbar-link active" href="/" aria-current="page">
+        <ul className="navbar-navigation m-0">
+          <li className="navbar-item">
+            <a
+              className={`navbar-link${isActive("/") ? " active" : ""}`}
+              href="/"
+              aria-current={isActive("/") ? "page" : undefined}
+            >
               Home
             </a>
           </li>
-          {/* <li class="navbar-item">
-            <a class="navbar-link">Link</a>
-          </li> */}
-          <li class="navbar-item">
-            <a class="navbar-link" href="/dashboard">Dashboard</a>
-          </li>
-          <li class="navbar-item dropdown">
+          <li className="navbar-item">
             <a
-              class="navbar-link dropdown-toggle"
+              className={`navbar-link${isActive("/dashboard") ? " active" : ""}`}
+              href="/dashboard"
+            >
+              Dashboard
+            </a>
+          </li>
+          <li className={`navbar-item dropdown${dropdownOpen ? " show" : ""}`}
+            onMouseEnter={() => setDropdownOpen(true)}
+            onMouseLeave={() => setDropdownOpen(false)}
+          >
+            <a
+              className={`navbar-link dropdown-toggle${["/guide","/about","/privacy"].includes(location.pathname) ? " active" : ""}`}
               id="navbarDropdown"
               role="button"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
+              aria-expanded={dropdownOpen ? "true" : "false"}
+              href="#"
+              onClick={e => e.preventDefault()}
             >
               Documentation
             </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <ul className={`dropdown-menu${dropdownOpen ? " show" : ""}`} aria-labelledby="navbarDropdown">
               <li>
-                <a class="dropdown-item">User Guide</a>
+                <a className={`dropdown-item${isActive("/guide") ? " active" : ""}`} href="/guide">User Guide</a>
               </li>
               <li>
-                <a class="dropdown-item">About Data Anonymizer</a>
+                <a className={`dropdown-item${isActive("/about") ? " active" : ""}`} href="/about">About Us</a>
               </li>
               <li>
-                <hr class="dropdown-divider" />
+                <hr className="dropdown-divider" />
               </li>
               <li>
-                <a class="dropdown-item">Privacy Policy</a>
+                <a className={`dropdown-item${isActive("/privacy") ? " active" : ""}`} href="/privacy">Privacy Policy</a>
               </li>
             </ul>
           </li>
-                <li class="navbar-item">
-            <a class="navbar-link" href="/notifications">Notifications</a>
+          <li className="navbar-item">
+            <a
+              className={`navbar-link${isActive("/notifications") ? " active" : ""}`}
+              href="/notifications"
+            >
+              Notifications
+            </a>
           </li>
         </ul>
     

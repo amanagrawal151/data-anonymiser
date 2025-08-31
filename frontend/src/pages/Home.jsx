@@ -32,7 +32,7 @@ const Home = (welcomeMessage) => {
         <span className="fs-4 fw-normal text-secondary">Upload your files and get started.</span>
       </h1> : 
       <>
-      <h1 className="display-4 fw-bold text-center mt-5 mb-4" style={{letterSpacing: '1px', color: '#2b2b6e'}}>
+      <h1 className="display-4 fw-bold text-center mb-4" style={{letterSpacing: '1px', color: '#2b2b6e'}}>
         upload more files on <span style={{color: '#007bff'}}>Data Anonymizer</span>!<br/>
         <span className="fs-4 fw-normal text-secondary"></span>
       </h1>
