@@ -1,6 +1,9 @@
 const User = require('../models/User');
 
+
 exports.createUser = async (data) => {
+  // Default role to 'user' if not provided
+  if (!data.role) data.role = 'user';
   const user = new User(data);
   return await user.save();
 };

@@ -11,7 +11,8 @@ const mongoose = require('mongoose');
  * @swagger
  * /api/s3/sign-url:
  *   post:
- *     summary: Generate a signed S3 upload URL
+ *     summary: Generate a signed S3 upload URL and create a file record
+ *     tags: [S3]
  *     requestBody:
  *       required: true
  *       content:
@@ -23,9 +24,13 @@ const mongoose = require('mongoose');
  *                 type: string
  *               contentType:
  *                 type: string
+ *               fileSize:
+ *                 type: number
+ *               userId:
+ *                 type: string
  *     responses:
  *       200:
- *         description: Signed URL generated
+ *         description: Signed URL generated and file record created
  *         content:
  *           application/json:
  *             schema:
@@ -35,6 +40,10 @@ const mongoose = require('mongoose');
  *                   type: string
  *                 key:
  *                   type: string
+ *       400:
+ *         description: Missing required fields
+ *       500:
+ *         description: Server error
  */
 router.post('/sign-url', async (req, res) => {
   try {

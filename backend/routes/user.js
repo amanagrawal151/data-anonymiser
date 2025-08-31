@@ -4,6 +4,34 @@ const userService = require('../services/userService');
 
 /**
  * @swagger
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         _id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         email:
+ *           type: string
+ *         department:
+ *           type: string
+ *         role:
+ *           type: string
+ *           enum: [admin, user]
+ *       required:
+ *         - name
+ *         - email
+ *         - department
+ *         - role
+ *       example:
+ *         _id: 64f0c1e2a1b2c3d4e5f6a7b8
+ *         name: John Doe
+ *         email: john@example.com
+ *         department: GSCIN-GCO-CFT-RRR PRITEC
+ *         role: user
+ *
  * /api/users:
  *   post:
  *     summary: Create a new user
@@ -13,17 +41,14 @@ const userService = require('../services/userService');
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               department:
- *                 type: string
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       201:
  *         description: User created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  */
@@ -46,6 +71,12 @@ router.post('/', async (req, res) => {
  *     responses:
  *       200:
  *         description: List of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/User'
  *       500:
  *         description: Server error
  */
@@ -74,6 +105,10 @@ router.get('/', async (req, res) => {
  *     responses:
  *       200:
  *         description: User found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       404:
  *         description: User not found
  *       500:
@@ -107,17 +142,14 @@ router.get('/:id', async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               department:
- *                 type: string
+ *             $ref: '#/components/schemas/User'
  *     responses:
  *       200:
  *         description: User updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
  *       400:
  *         description: Bad request
  *       404:

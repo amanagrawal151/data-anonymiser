@@ -12,7 +12,8 @@ const upload = multer({ storage });
  * @swagger
  * /api/upload:
  *   post:
- *     summary: Upload a file to S3
+ *     summary: Directly upload a file to S3 (legacy, not recommended for large files)
+ *     tags: [S3]
  *     requestBody:
  *       required: true
  *       content:
@@ -26,6 +27,19 @@ const upload = multer({ storage });
  *     responses:
  *       200:
  *         description: File uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 key:
+ *                   type: string
+ *       400:
+ *         description: No file uploaded
+ *       500:
+ *         description: Server error
  */
 // POST /api/upload - Upload file to S3
 
