@@ -1,3 +1,6 @@
+// Notification route
+const notificationRouter = require('./routes/notification');
+app.use('/api/notifications', notificationRouter);
 // Load environment variables first
 require('dotenv').config();
 

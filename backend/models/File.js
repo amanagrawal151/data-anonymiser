@@ -21,6 +21,14 @@ const fileSchema = new mongoose.Schema({
     required: true,
     default: Date.now
   },
+  fileSize: {
+    type: Number,
+    required: true
+  },
+  key: {
+    type: String,
+    required: true
+  },
   processingTimestamp: {
     type: Date
   },

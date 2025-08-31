@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
+
 const { getSignedUploadUrl } = require('../services/s3Service');
+const fileService = require('../services/fileService');
+const mongoose = require('mongoose');
 
 
 /**
@@ -34,16 +37,51 @@ const { getSignedUploadUrl } = require('../services/s3Service');
  */
 router.post('/sign-url', async (req, res) => {
   try {
-    const { filename, contentType } = req.body;
-    if (!filename || !contentType) {
-      return res.status(400).json({ error: 'filename and contentType are required' });
+    const { filename, contentType, fileSize, userId } = req.body;
+    if (!filename || !contentType || !fileSize || !userId) {
+      return res.status(400).json({ error: 'filename, contentType, fileSize, and userId are required' });
     }
     const bucket = process.env.AWS_S3_BUCKET;
     const { url, key } = await getSignedUploadUrl(bucket, filename, contentType);
+
+    // Save file document in DB
+    await fileService.createFile({
+      user: mongoose.Types.ObjectId(userId),
+      fileName: filename,
+      fileType: contentType,
+      fileSize,
+      key,
+      stage: 'uploaded',
+    });
+
     res.json({ url, key });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to generate signed URL' });
+  }
+});
+
+
+// POST /api/s3/download-to-local
+router.post('/download-to-local', async (req, res) => {
+  try {
+    const { fileId } = req.body;
+    if (!fileId) return res.status(400).json({ error: 'fileId is required' });
+
+    const File = require('../models/File');
+    const fileDoc = await File.findById(fileId);
+    if (!fileDoc) return res.status(404).json({ error: 'File not found' });
+
+    const localDir = require('path').join(__dirname, '../local_files');
+    if (!require('fs').existsSync(localDir)) require('fs').mkdirSync(localDir);
+    const localPath = require('path').join(localDir, fileDoc.fileName);
+
+    const { downloadFileFromS3 } = require('../services/s3Service');
+    await downloadFileFromS3(process.env.AWS_S3_BUCKET, fileDoc.key, localPath);
+
+    res.json({ message: 'File downloaded to local storage', localPath });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
