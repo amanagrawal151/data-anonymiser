@@ -1,3 +1,4 @@
+
 const express = require('express');
 const router = express.Router();
 
@@ -62,6 +63,41 @@ router.post('/sign-url', async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /api/s3/download-to-local:
+ *   post:
+ *     summary: Download a file from S3 to local backend storage
+ *     tags: [S3]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               fileId:
+ *                 type: string
+ *                 description: The ID of the file document
+ *     responses:
+ *       200:
+ *         description: File downloaded to local storage
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 localPath:
+ *                   type: string
+ *       400:
+ *         description: fileId is required
+ *       404:
+ *         description: File not found
+ *       500:
+ *         description: Server error
+ */
 // POST /api/s3/download-to-local
 router.post('/download-to-local', async (req, res) => {
   try {

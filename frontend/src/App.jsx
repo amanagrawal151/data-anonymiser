@@ -11,7 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import Notification from "./pages/Notification";
 import Guide from "./pages/Guide";
 import About from "./pages/About";
+
 import Privacy from "./pages/Privacy";
+import NotFound from "./pages/404";
 
 
 import React, { useState } from "react";
@@ -32,7 +34,7 @@ const App = () => {
         <Route path="/guide" element={<Guide />} />
         <Route path="/about" element={<About />} />
         <Route path="/privacy" element={<Privacy />} />
-        {/* Add more routes here as needed */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </Router>
