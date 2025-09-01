@@ -29,3 +29,35 @@ def detect_pii(request: PIIRequest) -> Dict[str, List[dict]]:
         word_map = {word: bool(pred) for word, pred in zip(values, preds)}
         result[col] = [word_map, {"count": count_true}]
     return result
+
+@app.post("/csv-to-parquet")
+async def csv_to_parquet(file: UploadFile = File(...)):
+    temp_csv_path = f"temp_{file.filename}"
+    with open(temp_csv_path, "wb") as f:
+        f.write(await file.read())
+    df = pd.read_csv(temp_csv_path)
+    table = pa.Table.from_pandas(df)
+    parquet_path = temp_csv_path.replace(".csv", ".parquet")
+    pq.write_table(table, parquet_path)
+    os.remove(temp_csv_path)
+    def iterfile():
+        with open(parquet_path, "rb") as f:
+            yield from f
+        os.remove(parquet_path)
+    return StreamingResponse(iterfile(), media_type="application/octet-stream", headers={"Content-Disposition": f"attachment; filename={os.path.basename(parquet_path)}"})
+
+@app.post("/parquet-to-csv")
+async def parquet_to_csv(file: UploadFile = File(...)):
+    temp_parquet_path = f"temp_{file.filename}"
+    with open(temp_parquet_path, "wb") as f:
+        f.write(await file.read())
+    table = pq.read_table(temp_parquet_path)
+    df = table.to_pandas()
+    csv_path = temp_parquet_path.replace(".parquet", ".csv")
+    df.to_csv(csv_path, index=False)
+    os.remove(temp_parquet_path)
+    def iterfile():
+        with open(csv_path, "rb") as f:
+            yield from f
+        os.remove(csv_path)
+    return StreamingResponse(iterfile(), media_type="text/csv", headers={"Content-Disposition": f"attachment; filename={os.path.basename(csv_path)}"})

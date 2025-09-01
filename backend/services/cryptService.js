@@ -103,24 +103,20 @@ const encryptFile = async (filePath) => {
 const convertToCSV = async (filePath) => {
   const ext = path.extname(filePath).toLowerCase();
   if (ext === ".parquet") {
-    const csvPath = filePath.replace(/\.parquet$/i, ".csv");
-    const reader = await parquet.ParquetReader.openFile(filePath);
-    const cursor = reader.getCursor();
-    const rows = [];
-    let record = null;
-    while ((record = await cursor.next())) {
-      rows.push(record);
-    }
-    await reader.close();
-
-    const headers = Object.keys(rows[0]);
-    const csvData = [
-      headers.join(","),
-      ...rows.map((row) =>
-        headers.map((h) => JSON.stringify(row[h] ?? "")).join(",")
-      ),
-    ].join("\n");
-    fs.writeFileSync(csvPath, csvData, "utf8");
+    const form = new FormData();
+    form.append("file", fs.createReadStream(filePath));
+    const response = await axios.post(
+      "http://localhost:8000/parquet-to-csv",
+      form,
+      { responseType: "stream", headers: form.getHeaders() }
+    );
+    const csvPath = path.join(__dirname, "..", "tmp", `${Date.now()}_${path.basename(filePath, ".parquet")}.csv`);
+    const writer = fs.createWriteStream(csvPath);
+    await new Promise((resolve, reject) => {
+      response.data.pipe(writer);
+      writer.on("finish", resolve);
+      writer.on("error", reject);
+    });
     return csvPath;
   }
 
@@ -144,22 +140,20 @@ const convertFromCSV = async (filePath, ext) => {
 
   // Convert to Parquet
   if (ext === ".parquet") {
-    const parquetPath = filePath.replace(/\.csv$/i, ".parquet");
-    const schemaObj = {};
-    header.forEach((col) => {
-      schemaObj[col] = { type: "UTF8" };
+    const form = new FormData();
+    form.append("file", fs.createReadStream(filePath));
+    const response = await axios.post(
+      "http://localhost:8000/csv-to-parquet",
+      form,
+      { responseType: "stream", headers: form.getHeaders() }
+    );
+    const parquetPath = path.join(__dirname, "..", "tmp", `${Date.now()}_${path.basename(filePath, ".csv")}.parquet`);
+    const writer = fs.createWriteStream(parquetPath);
+    await new Promise((resolve, reject) => {
+      response.data.pipe(writer);
+      writer.on("finish", resolve);
+      writer.on("error", reject);
     });
-    const schema = new parquet.ParquetSchema(schemaObj);
-
-    const writer = await parquet.ParquetWriter.openFile(schema, parquetPath);
-    for (const row of dataRows) {
-      const rowObj = {};
-      header.forEach((col, idx) => {
-        rowObj[col] = row[idx] ?? "";
-      });
-      await writer.appendRow(rowObj);
-    }
-    await writer.close();
     return parquetPath;
   }
 
