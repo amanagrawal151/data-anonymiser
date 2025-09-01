@@ -27,8 +27,8 @@ const Home = (welcomeMessage) => {
       setStepperStep(1);
       setStepperFailed(null);
     }
-    if (status === 'uploaded') {
-      setStepperStep(2);
+    if (status === 'ready') {
+      setStepperStep(3);
       setStepperFailed(null);
     }
     if (status === 'failed') {
@@ -86,8 +86,8 @@ const Home = (welcomeMessage) => {
             steps={[
               { label: initStatus },
               { label: uploadStatus },
-              { label: "Processing" },
-              { label: "Ready to download" },
+              { label: uploadStatus === 'ready' ? 'Processed' : 'Processing' },
+              { label: 'Ready to download' },
             ]}
             current={stepperStep}
             activeColor="text-warning"

@@ -23,19 +23,7 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
             </div>
           </div>
           <div className="d-flex gap-2 mt-3">
-            {downloadUrl ? (
-              <a
-                href={downloadUrl}
-                className="btn btn-success btn-lg"
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <em className="icon">download</em> Download File
-              </a>
-            ) : (
-              <span className="text-warning align-self-center">Processing complete. Download link not available.</span>
-            )}
+            <span className="text-info align-self-center">File uploaded. Processing...</span>
             <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
               <em className="icon">close</em>
             </button>
@@ -64,6 +52,44 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
           <button className="file-upload-error-button btn btn-lg btn-flat-light" onClick={onClose}>
             <em className="icon">close</em>
           </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (uploadStatus === 'ready') {
+    return (
+      <div style={{ width: "600px" }}>
+        <div className="file-upload file-upload-md">
+          <div className="file-upload-icon">
+            <svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" clipRule="evenodd" d="M0 0H23L38 15V48H0V0ZM10 27.5L11.5 26L16 30.5L26.5 20L28 21.5L16 33.5L10 27.5Z" fill="black" stroke="currentColor"></path>
+            </svg>
+          </div>
+          <div className="file-upload-text">
+            <div className="file-upload-text-content d-flex justify-content-between">
+              <span className="file-upload-title">{fileName}</span><br />
+              <span className="file-upload-size">{formatSize(fileSize)}</span>
+            </div>
+          </div>
+          <div className="d-flex gap-2 mt-3">
+            {downloadUrl ? (
+              <a
+                href={downloadUrl}
+                className="btn btn-success btn-lg"
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <em className="icon">download</em> Download File
+              </a>
+            ) : (
+              <span className="text-warning align-self-center">Processing complete. Download link not available.</span>
+            )}
+            <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
+              <em className="icon">close</em>
+            </button>
+          </div>
         </div>
       </div>
     );
