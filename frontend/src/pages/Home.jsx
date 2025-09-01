@@ -27,18 +27,21 @@ const Home = (welcomeMessage) => {
       setStepperStep(1);
       setStepperFailed(null);
     }
-    if(status === 'uploaded')
-    {
-      setStepperFailed(2)
-      setStepperFailed(null)
+    if(status === 'uploaded') {
+      setStepperStep(2);
+      setStepperFailed(null);
     }
     if (status === 'ready') {
       setStepperStep(4);
       setStepperFailed(null);
     }
-    if (status === 'failed') {
+    if (status === 'failed-upload') {
       setStepperStep(1);
       setStepperFailed(1); // Mark uploading stage as failed
+    }
+    if (status === 'failed-processing') {
+      setStepperStep(3);
+      setStepperFailed(3); // Mark processing stage as failed
     }
   };
 

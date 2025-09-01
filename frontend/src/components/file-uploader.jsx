@@ -12,17 +12,20 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
 
 
   const handleFileChange = (e) => {
+    console.log('[FileUploader] File selected:', e.target.files[0]?.name, e.target.files[0]);
     setSelectedFile(e.target.files[0]);
   };
 
   const uploadAndCrypt = async (action) => {
     if (!selectedFile) return;
+    console.log(`[FileUploader] Starting ${action} & upload for:`, selectedFile.name);
     setUploadStatus('uploading');
     setUploadProgress(0);
     setDownloadUrl(null);
     if (onProgress) onProgress('uploading', 0, selectedFile.name);
     try {
       // 1. Call backend to get pre-signed URL
+      console.log('[FileUploader] Requesting pre-signed upload URL...');
       const res = await fetch('http://localhost:3000/api/s3/sign-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,12 +37,14 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
         }),
       });
       if (!res.ok) {
-        setUploadStatus('failed');
-        if (onProgress) onProgress('failed', 0, selectedFile.name);
+        console.error('[FileUploader] Failed to get upload URL:', res.status, await res.text());
+        setUploadStatus('failed-upload');
+        if (onProgress) onProgress('failed-upload', 0, selectedFile.name);
         alert('Failed to get upload URL');
         return;
       }
       const { url, key } = await res.json();
+      console.log('[FileUploader] Received upload URL and key:', url, key);
       // 2. Upload file to S3 with progress
       await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -50,23 +55,27 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
             const percent = Math.round((e.loaded / e.total) * 100);
             setUploadProgress(percent);
             if (onProgress) onProgress('uploading', percent, selectedFile.name);
+            console.log(`[FileUploader] Upload progress: ${percent}%`);
           }
         };
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
+            console.log('[FileUploader] File uploaded to S3 successfully.');
             setUploadProgress(100);
             if (onProgress) onProgress('uploaded', 100, selectedFile.name);
             resolve();
           } else {
-            setUploadStatus('failed');
-            if (onProgress) onProgress('failed', uploadProgress, selectedFile.name);
+            console.error('[FileUploader] S3 upload failed:', xhr.status, xhr.statusText);
+            setUploadStatus('failed-upload');
+            if (onProgress) onProgress('failed-upload', uploadProgress, selectedFile.name);
             alert('Failed to upload file to S3');
             reject();
           }
         };
         xhr.onerror = () => {
-          setUploadStatus('failed');
-          if (onProgress) onProgress('failed', uploadProgress, selectedFile.name);
+          console.error('[FileUploader] S3 upload error:', xhr.status, xhr.statusText);
+          setUploadStatus('failed-upload');
+          if (onProgress) onProgress('failed-upload', uploadProgress, selectedFile.name);
           alert('Failed to upload file to S3');
           reject();
         };
@@ -74,6 +83,7 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       });
       // 3. Call crypt API
       setUploadStatus('processing');
+      console.log(`[FileUploader] Calling crypt API (${action}) for key:`, key);
       let cryptRes;
       if (action === 'encrypt') {
         cryptRes = await fetch('http://localhost:3000/api/crypt/encrypt-file', {
@@ -89,12 +99,14 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
         });
       }
       if (!cryptRes.ok) {
-        setUploadStatus('failed');
-        if (onProgress) onProgress('failed', 100, selectedFile.name);
+        console.error('[FileUploader] Crypt API failed:', cryptRes.status, await cryptRes.text());
+        setUploadStatus('failed-processing');
+        if (onProgress) onProgress('failed-processing', 100, selectedFile.name);
         alert('Failed to process file');
         return;
       }
       const { url: downloadUrlFromApi } = await cryptRes.json();
+      console.log('[FileUploader] Received download URL from crypt API:', downloadUrlFromApi);
       setDownloadUrl(downloadUrlFromApi);
       if (typeof setDownloadUrlProp === 'function') {
         setDownloadUrlProp(downloadUrlFromApi);
@@ -102,11 +114,12 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       setUploadStatus('ready'); // Set status to 'ready' for ready-to-download state
       if (onProgress) onProgress('ready', 100, selectedFile.name);
       if (onUpload) onUpload(selectedFile.name);
+      console.log('[FileUploader] File processing complete. Ready to download.');
     } catch (err) {
-      setUploadStatus('failed');
-      if (onProgress) onProgress('failed', 0, selectedFile.name);
+      console.error('[FileUploader] Unexpected error during upload or processing:', err);
+      setUploadStatus('failed-processing');
+      if (onProgress) onProgress('failed-processing', 0, selectedFile.name);
       alert('An unexpected error occurred during upload or processing.');
-      console.error('Upload/crypt error:', err);
     }
   };
 

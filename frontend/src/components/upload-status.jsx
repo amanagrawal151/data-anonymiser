@@ -33,7 +33,7 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
     );
   }
 
-  if (uploadStatus === 'failed') {
+  if (uploadStatus === 'failed-upload') {
     return (
       <div style={{ width: "600px" }}>
         <div className="file-upload-error file-upload-md">
@@ -46,7 +46,30 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
           <div className="file-upload-error-text">
             <div className="file-upload-error-text-content ">
               <span className="file-upload-error-title">{fileName}</span><br />
-              <span className="file-upload-error-size">Failed to upload</span>
+              <span className="file-upload-error-size">Failed during upload stage</span>
+            </div>
+          </div>
+          <button className="file-upload-error-button btn btn-lg btn-flat-light" onClick={onClose}>
+            <em className="icon">close</em>
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (uploadStatus === 'failed-processing') {
+    return (
+      <div style={{ width: "600px" }}>
+        <div className="file-upload-error file-upload-md">
+          <div className="file-upload-error-icon">
+            <svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 29H20V31H18V29ZM18 21H20V27H18V21ZM18.99 16C13.47 16 9 20.48 9 26C9 31.52 13.47 36 18.99 36C24.52 36 29 31.52 29 26C29 20.48 24.52 16 18.99 16ZM19 34C14.58 34 11 30.42 11 26C11 21.58 14.58 18 19 18C23.42 18 27 21.58 27 26C27 30.42 23.42 34 19 34Z" fill="#DB392D"></path>
+              <path fillRule="evenodd" clipRule="evenodd" d="M22.1716 2H2V46H36V15.8284L22.1716 2ZM23 0H0V48H38V15L23 0Z" fill="#DB392D"></path>
+            </svg>
+          </div>
+          <div className="file-upload-error-text">
+            <div className="file-upload-error-text-content ">
+              <span className="file-upload-error-title">{fileName}</span><br />
+              <span className="file-upload-error-size">Failed during processing stage</span>
             </div>
           </div>
           <button className="file-upload-error-button btn btn-lg btn-flat-light" onClick={onClose}>
