@@ -48,21 +48,23 @@ const deleteNotification = async (id) => {
  * @param {Object} params - { user, fileType, cryptForm, success, fileName }
  */
 const createCryptNotification = async ({ user, fileType, cryptForm, success, fileName }) => {
-  let title, details, bg;
+  let title, details, bg , priority;
   if (success) {
     title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Success`;
     details = `${fileName} ${cryptForm === 'encryption' ? 'encrypted' : 'decrypted'} successfully.`;
-    bg = 'bg-success';
+    bg = 'bg-lvl1';
+    priority = false
   } else {
     title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Failed`;
     details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
-    bg = 'bg-danger';
+    bg = 'bg-lvl2';
+    priority = true;
   }
   // Store timestamp and format as relative time
   const now = new Date();
   const time = getRelativeTime(now);
   const notification = {
-    user,
+    user : "68b36f80cb1d579c7f9f2e5a" || user,
     title,
     details,
     fileType,
