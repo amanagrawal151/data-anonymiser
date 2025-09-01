@@ -137,5 +137,7 @@ router.post('/decrypt-file', async (req, res) => {
   }
 });
 
+module.exports = router;
+
 
 
