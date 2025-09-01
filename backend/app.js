@@ -4,15 +4,20 @@ const notificationRouter = require('./routes/notification');
 // Load environment variables first
 require('dotenv').config();
 
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 var indexRouter = require('./routes/index');
 
+
 var app = express();
+// Enable CORS for all routes
+app.use(cors());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
