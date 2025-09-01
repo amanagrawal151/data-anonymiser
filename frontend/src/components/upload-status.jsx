@@ -81,7 +81,7 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <em className="icon">download</em> Download File
+                <em className="icon">download</em>
               </a>
             ) : (
               <span className="text-warning align-self-center">Processing complete. Download link not available.</span>

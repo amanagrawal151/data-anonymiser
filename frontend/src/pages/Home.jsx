@@ -27,8 +27,13 @@ const Home = (welcomeMessage) => {
       setStepperStep(1);
       setStepperFailed(null);
     }
+    if(status === 'uploaded')
+    {
+      setStepperFailed(2)
+      setStepperFailed(null)
+    }
     if (status === 'ready') {
-      setStepperStep(3);
+      setStepperStep(4);
       setStepperFailed(null);
     }
     if (status === 'failed') {
