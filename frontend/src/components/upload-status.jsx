@@ -1,6 +1,6 @@
 
 
-const UploadStatus = ({ fileName, uploadStatus, fileSize, onClose }) => {
+const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose }) => {
   // Helper to format file size
   const formatSize = (size) => {
     if (!size) return '';
@@ -71,10 +71,10 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, onClose }) => {
         <div className="file-uploading-text">
           <div className="file-uploading-text-content d-flex justify-content-between">
             <span className="file-uploading-title">{fileName || "Uploading file..."}</span><br />
-            <span className="file-uploading-size">Uploading...</span>
+            <span className="file-uploading-size">{progress}%</span>
           </div>
           <div className="file-uploading-progress bg-black bg-opacity-10">
-            <div className="h-100 bg-black" style={{ width: "60%" }}></div>
+            <div className="h-100 bg-black" style={{ width: `${progress}%` }}></div>
           </div>
         </div>
         <button className="file-uploading-button btn btn-lg btn-flat-light" onClick={onClose}>

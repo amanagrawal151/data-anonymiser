@@ -4,24 +4,37 @@ import Stepper from "../components/Stepper";
 import UploadStatus from "../components/upload-status";
 import Notification from "../components/notification";
 
+
 const Home = (welcomeMessage) => {
   const [showUploader, setShowUploader] = useState(true);
   const [showStatus, setShowStatus] = useState(false);
   const [stepperStep, setStepperStep] = useState(0);
+  const [stepperFailed, setStepperFailed] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [initStatus, setInitStatus] = useState("Initiating");
-  const [uploadStatus, setUploadStatus] = useState("Uploading");
+  const [uploadStatus, setUploadStatus] = useState("uploading");
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Callback for FileUploader
-  const handleUpload = (fileName) => {
-    setInitStatus("Initiated");
-    setTimeout(() => {
+  const handleUploadProgress = (status, progress, fileName) => {
+    setUploadStatus(status);
+    setUploadProgress(progress);
+    if (fileName) setUploadedFileName(fileName);
+    if (status === 'uploading') {
       setShowUploader(false);
       setShowStatus(true);
-      setUploadedFileName(fileName);
+      setInitStatus("Initiated");
       setStepperStep(1);
-      setUploadStatus("Uploaded");
-    }, 500); // Simulate a short delay for status transition
+      setStepperFailed(null);
+    }
+    if (status === 'uploaded') {
+      setStepperStep(2);
+      setStepperFailed(null);
+    }
+    if (status === 'failed') {
+      setStepperStep(1);
+      setStepperFailed(1); // Mark uploading stage as failed
+    }
   };
 
   return (
@@ -41,11 +54,12 @@ const Home = (welcomeMessage) => {
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-md-8 col-lg-6 d-flex flex-column align-items-center">
           {/* <Notification /> */}
-          {showUploader && <FileUploader onUpload={handleUpload} />}
+          {showUploader && <FileUploader onProgress={handleUploadProgress} />}
           {showStatus && (
             <UploadStatus
               fileName={uploadedFileName}
               uploadStatus={uploadStatus}
+              progress={uploadProgress}
             />
           )}
           <Stepper
@@ -58,7 +72,7 @@ const Home = (welcomeMessage) => {
             current={stepperStep}
             activeColor="text-warning"
             completedColor="text-success"
-            failed={null}
+            failed={stepperFailed}
           />
         </div>
       </div>
