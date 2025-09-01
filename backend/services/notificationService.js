@@ -1,5 +1,21 @@
 const Notification = require('../models/Notification');
 
+function getRelativeTime(date) {
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return 'just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin === 1) return '1 minute ago';
+  if (diffMin < 60) return `${diffMin} minutes ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr === 1) return 'an hour ago';
+  if (diffHr < 24) return `${diffHr} hours ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay === 1) return 'a day ago';
+  return `${diffDay} days ago`;
+}
+
 const createNotification = async (data) => {
   console.log('[notificationService] Creating notification with data:', data);
   const result = await Notification.create(data);
@@ -42,11 +58,9 @@ const createCryptNotification = async ({ user, fileType, cryptForm, success, fil
     details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
     bg = 'bg-danger';
   }
-  // Get current date and time in Indian Standard Time (IST)
+  // Store timestamp and format as relative time
   const now = new Date();
-  const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-  const istDate = new Date(now.getTime() + istOffset);
-  const time = istDate.toLocaleString('en-IN', { hour12: true });
+  const time = getRelativeTime(now);
   const notification = {
     user,
     title,

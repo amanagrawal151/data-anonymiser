@@ -168,7 +168,7 @@ router.post('/sign-url', async (req, res) => {
         const update = {
           $inc: {
             [`fileTypeStats.${fileTypeKey}`]: 1,
-            [`fileSizeStats.${fileTypeKey}`]: fileSize / (1024 * 1024 * 1024) // convert bytes to GB
+            [`fileSizeStats.${fileTypeKey}`]: fileSize / (1024 * 1024) // convert bytes to MB
           }
         };
         if (stats) {
@@ -179,7 +179,7 @@ router.post('/sign-url', async (req, res) => {
           const newStats = {
             user: userId,
             fileTypeStats: { [fileTypeKey]: 1 },
-            fileSizeStats: { [fileTypeKey]: fileSize / (1024 * 1024 * 1024) },
+            fileSizeStats: { [fileTypeKey]: fileSize / (1024 * 1024) },// in MB
           };
           await statsService.createStats(newStats);
           console.log(`[POST /api/s3/sign-url] Stats created for user: ${userId}`);

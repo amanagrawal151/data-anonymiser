@@ -33,7 +33,7 @@ const Sidebar = ({ show, setShow }) => {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setNotifications(data.slice(0, 3));
+          setNotifications(data.reverse().slice(0, 5));
         }
       })
       .catch(() => {});
