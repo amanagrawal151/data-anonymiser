@@ -111,7 +111,7 @@ const convertToCSV = async (filePath) => {
       form,
       { responseType: "stream", headers: form.getHeaders() }
     );
-    const csvPath = path.join(__dirname, "..", "tmp", `${Date.now()}_${path.basename(filePath, ".parquet")}.csv`);
+    const csvPath = path.join(__dirname, "..", "tmp", `${path.basename(filePath, ".parquet")}.csv`);
     const writer = fs.createWriteStream(csvPath);
     await new Promise((resolve, reject) => {
       response.data.pipe(writer);
@@ -148,7 +148,7 @@ const convertFromCSV = async (filePath, ext) => {
       form,
       { responseType: "stream", headers: form.getHeaders() }
     );
-    const parquetPath = path.join(__dirname, "..", "tmp", `${Date.now()}_${path.basename(filePath, ".csv")}.parquet`);
+    const parquetPath = path.join(__dirname, "..", "tmp", `${path.basename(filePath, ".csv")}.parquet`);
     const writer = fs.createWriteStream(parquetPath);
     await new Promise((resolve, reject) => {
       response.data.pipe(writer);
