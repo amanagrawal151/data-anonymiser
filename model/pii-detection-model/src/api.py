@@ -1,8 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import StreamingResponse
 from pydantic import RootModel
 from typing import Dict, List
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification
 import torch
+import pandas as pd
+import pyarrow as pa
+import pyarrow.parquet as pq
+import os
 
 app = FastAPI()
 

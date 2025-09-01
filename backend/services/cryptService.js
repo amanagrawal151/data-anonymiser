@@ -5,6 +5,7 @@ const parquet = require("parquets");
 const XLSX = require("xlsx");
 const axios = require("axios");
 const { parse } = require("csv-parse/sync");
+const FormData = require("form-data");
 
 const SECRET_KEY =
   process.env.CRYPTO_SECRET_KEY || "default_secret_key_32byteslong!";
