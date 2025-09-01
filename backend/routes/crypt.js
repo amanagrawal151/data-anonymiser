@@ -41,7 +41,7 @@ const router = express.Router();
  *         description: Server error
  */
 router.post('/encrypt-file', async (req, res) => {
-  const { key, fileName, fileType } = req.body;
+  const { key, fileName, fileType, userId } = req.body;
   if (!key || !fileName || !fileType) return res.status(400).json({ error: 'key, fileName, and fileType are required' });
   const File = require('../models/File');
   try {
@@ -54,7 +54,36 @@ router.post('/encrypt-file', async (req, res) => {
     const processedKey = `processed/${Date.now()}_${fileName}`;
     await uploadFileToS3(buffer, processedKey, fileType, bucket);
     // Update the file's key in the DB
-    await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'processed', processingTimestamp: new Date() });
+    await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
+    // Update stats for success file
+    try {
+      const statsService = require('../services/statsService');
+      const stats = await statsService.getStatsByUser(userId);
+      const fileTypeKey = (fileType.toLowerCase().includes('csv')) ? 'csv'
+        : (fileType.toLowerCase().includes('excel') || fileType.toLowerCase().includes('xlsx')) ? 'excel'
+        : (fileType.toLowerCase().includes('parquet')) ? 'parquet'
+        : null;
+      if (fileTypeKey) {
+        const update = {
+          $inc: {
+            'fileStatusStats.success': 1
+          }
+        };
+        if (stats) {
+          await statsService.updateStats(stats._id, update);
+          console.log(`[crypt/encrypt-file] Stats updated for success file for user: ${userId}`);
+        } else {
+          const newStats = {
+            user: userId,
+            fileStatusStats: { success: 1 },
+          };
+          await statsService.createStats(newStats);
+          console.log(`[crypt/encrypt-file] Stats created for success file for user: ${userId}`);
+        }
+      }
+    } catch (statsErr) {
+      console.error('[crypt/encrypt-file] Stats update for success file failed:', statsErr);
+    }
     // Generate pre-signed download URL
     const url = await getSignedDownloadUrl(bucket, processedKey);
     res.json({ url });
@@ -65,6 +94,35 @@ router.post('/encrypt-file', async (req, res) => {
       await File.findOneAndUpdate({ key }, { stage: 'failed', processingTimestamp: new Date() });
     } catch (dbErr) {
       console.error('[POST /api/crypt/encrypt-file] DB update error:', dbErr);
+    }
+    // Update stats for failed file
+    try {
+      const statsService = require('../services/statsService');
+      const stats = await statsService.getStatsByUser(userId);
+      const fileTypeKey = (fileType.toLowerCase().includes('csv')) ? 'csv'
+        : (fileType.toLowerCase().includes('excel') || fileType.toLowerCase().includes('xlsx')) ? 'excel'
+        : (fileType.toLowerCase().includes('parquet')) ? 'parquet'
+        : null;
+      if (fileTypeKey) {
+        const update = {
+          $inc: {
+            'fileStatusStats.failure': 1
+          }
+        };
+        if (stats) {
+          await statsService.updateStats(stats._id, update);
+          console.log(`[crypt/encrypt-file] Stats updated for failed file for user: ${userId}`);
+        } else {
+          const newStats = {
+            user: userId,
+            fileStatusStats: { failure: 1 },
+          };
+          await statsService.createStats(newStats);
+          console.log(`[crypt/encrypt-file] Stats created for failed file for user: ${userId}`);
+        }
+      }
+    } catch (statsErr) {
+      console.error('[crypt/encrypt-file] Stats update for failed file failed:', statsErr);
     }
     res.status(500).json({ error: err.message });
   }
@@ -108,7 +166,7 @@ router.post('/encrypt-file', async (req, res) => {
  *         description: Server error
  */
 router.post('/decrypt-file', async (req, res) => {
-  const { key, fileName, fileType } = req.body;
+  const { key, fileName, fileType, userId } = req.body;
   if (!key || !fileName || !fileType) return res.status(400).json({ error: 'key, fileName, and fileType are required' });
   const File = require('../models/File');
   try {
@@ -121,7 +179,36 @@ router.post('/decrypt-file', async (req, res) => {
     const processedKey = `processed/${Date.now()}_${fileName}`;
     await uploadFileToS3(buffer, processedKey, fileType, bucket);
     // Update the file's key in the DB
-    await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'processed', processingTimestamp: new Date() });
+    await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
+    // Update stats for success file
+    try {
+      const statsService = require('../services/statsService');
+      const stats = await statsService.getStatsByUser(userId);
+      const fileTypeKey = (fileType.toLowerCase().includes('csv')) ? 'csv'
+        : (fileType.toLowerCase().includes('excel') || fileType.toLowerCase().includes('xlsx')) ? 'excel'
+        : (fileType.toLowerCase().includes('parquet')) ? 'parquet'
+        : null;
+      if (fileTypeKey) {
+        const update = {
+          $inc: {
+            'fileStatusStats.success': 1
+          }
+        };
+        if (stats) {
+          await statsService.updateStats(stats._id, update);
+          console.log(`[crypt/decrypt-file] Stats updated for success file for user: ${userId}`);
+        } else {
+          const newStats = {
+            user: userId,
+            fileStatusStats: { success: 1 },
+          };
+          await statsService.createStats(newStats);
+          console.log(`[crypt/decrypt-file] Stats created for success file for user: ${userId}`);
+        }
+      }
+    } catch (statsErr) {
+      console.error('[crypt/decrypt-file] Stats update for success file failed:', statsErr);
+    }
     // Generate pre-signed download URL
     const url = await getSignedDownloadUrl(bucket, processedKey);
     res.json({ url });
@@ -132,6 +219,35 @@ router.post('/decrypt-file', async (req, res) => {
       await File.findOneAndUpdate({ key }, { stage: 'failed', processingTimestamp: new Date() });
     } catch (dbErr) {
       console.error('[POST /api/crypt/decrypt-file] DB update error:', dbErr);
+    }
+    // Update stats for failed file
+    try {
+      const statsService = require('../services/statsService');
+      const stats = await statsService.getStatsByUser(userId);
+      const fileTypeKey = (fileType.toLowerCase().includes('csv')) ? 'csv'
+        : (fileType.toLowerCase().includes('excel') || fileType.toLowerCase().includes('xlsx')) ? 'excel'
+        : (fileType.toLowerCase().includes('parquet')) ? 'parquet'
+        : null;
+      if (fileTypeKey) {
+        const update = {
+          $inc: {
+            'fileStatusStats.failure': 1
+          }
+        };
+        if (stats) {
+          await statsService.updateStats(stats._id, update);
+          console.log(`[crypt/decrypt-file] Stats updated for failed file for user: ${userId}`);
+        } else {
+          const newStats = {
+            user: userId,
+            fileStatusStats: { failure: 1 },
+          };
+          await statsService.createStats(newStats);
+          console.log(`[crypt/decrypt-file] Stats created for failed file for user: ${userId}`);
+        }
+      }
+    } catch (statsErr) {
+      console.error('[crypt/decrypt-file] Stats update for failed file failed:', statsErr);
     }
     res.status(500).json({ error: err.message });
   }

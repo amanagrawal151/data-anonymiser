@@ -1,5 +1,3 @@
-
-
 const express = require('express');
 const router = express.Router();
 
@@ -55,19 +53,141 @@ router.post('/sign-url', async (req, res) => {
       return res.status(400).json({ error: 'filename, contentType, fileSize, and userId are required' });
     }
     const bucket = process.env.AWS_S3_BUCKET;
-    const { url, key } = await getSignedUploadUrl(bucket, filename, contentType);
-    console.log(`[POST /api/s3/sign-url] Generated signed URL for file: ${filename}, key: ${key}`);
+    let url, key;
+    try {
+      const result = await getSignedUploadUrl(bucket, filename, contentType);
+      url = result.url;
+      key = result.key;
+      console.log(`[POST /api/s3/sign-url] Generated signed URL for file: ${filename}, key: ${key}`);
+    } catch (s3Err) {
+      console.error('[POST /api/s3/sign-url] S3 signed URL generation failed:', s3Err);
+      // Create file record with failed status
+      let failedFileDoc;
+      try {
+        failedFileDoc = await fileService.createFile({
+          user: userId,
+          fileName: filename,
+          fileType: contentType,
+          fileSize,
+          key: null,
+          stage: 'failed',
+        });
+        console.log(`[POST /api/s3/sign-url] File record created with failed status for user: ${userId}`);
+      } catch (fileErr) {
+        console.error('[POST /api/s3/sign-url] File creation for failed S3 URL also failed:', fileErr);
+      }
+      // Update stats for failed file
+      try {
+        const statsService = require('../services/statsService');
+        const stats = await statsService.getStatsByUser(userId);
+        const fileTypeKey = (contentType.toLowerCase().includes('csv')) ? 'csv'
+          : (contentType.toLowerCase().includes('excel') || contentType.toLowerCase().includes('xlsx')) ? 'excel'
+          : (contentType.toLowerCase().includes('parquet')) ? 'parquet'
+          : null;
+        if (fileTypeKey) {
+          const update = {
+            $inc: {
+              'fileStatusStats.failure': 1
+            }
+          };
+          if (stats) {
+            await statsService.updateStats(stats._id, update);
+            console.log(`[POST /api/s3/sign-url] Stats updated for failed file for user: ${userId}`);
+          } else {
+            // Create new stats document for user
+            const newStats = {
+              user: userId,
+              fileStatusStats: { failure: 1 },
+            };
+            await statsService.createStats(newStats);
+            console.log(`[POST /api/s3/sign-url] Stats created for failed file for user: ${userId}`);
+          }
+        }
+      } catch (statsErr) {
+        console.error('[POST /api/s3/sign-url] Stats update for failed file failed:', statsErr);
+      }
+      return res.status(500).json({ error: 'Failed to generate signed S3 upload URL' });
+    }
 
     // Save file document in DB
-    await fileService.createFile({
-      user: userId,
-      fileName: filename,
-      fileType: contentType,
-      fileSize,
-      key,
-      stage: 'uploaded',
-    });
-    console.log(`[POST /api/s3/sign-url] File record created for user: ${userId}`);
+    let fileDoc;
+    try {
+      fileDoc = await fileService.createFile({
+        user: userId,
+        fileName: filename,
+        fileType: contentType,
+        fileSize,
+        key,
+        stage: 'uploaded',
+      });
+      console.log(`[POST /api/s3/sign-url] File record created for user: ${userId}`);
+    } catch (fileErr) {
+      console.error('[POST /api/s3/sign-url] File creation failed:', fileErr);
+      // Update stats for failed file
+      try {
+        const statsService = require('../services/statsService');
+        const stats = await statsService.getStatsByUser(userId);
+        const fileTypeKey = (contentType.toLowerCase().includes('csv')) ? 'csv'
+          : (contentType.toLowerCase().includes('excel') || contentType.toLowerCase().includes('xlsx')) ? 'excel'
+          : (contentType.toLowerCase().includes('parquet')) ? 'parquet'
+          : null;
+        if (fileTypeKey) {
+          const update = {
+            $inc: {
+              'fileStatusStats.failure': 1
+            }
+          };
+          if (stats) {
+            await statsService.updateStats(stats._id, update);
+            console.log(`[POST /api/s3/sign-url] Stats updated for failed file for user: ${userId}`);
+          } else {
+            // Create new stats document for user
+            const newStats = {
+              user: userId,
+              fileStatusStats: { failure: 1 },
+            };
+            await statsService.createStats(newStats);
+            console.log(`[POST /api/s3/sign-url] Stats created for failed file for user: ${userId}`);
+          }
+        }
+      } catch (statsErr) {
+        console.error('[POST /api/s3/sign-url] Stats update for failed file failed:', statsErr);
+      }
+      return res.status(500).json({ error: 'Failed to create file record' });
+    }
+
+    // Update stats for user
+    try {
+      const statsService = require('../services/statsService');
+      const stats = await statsService.getStatsByUser(userId);
+      const fileTypeKey = (contentType.toLowerCase().includes('csv')) ? 'csv'
+        : (contentType.toLowerCase().includes('excel') || contentType.toLowerCase().includes('xlsx')) ? 'excel'
+        : (contentType.toLowerCase().includes('parquet')) ? 'parquet'
+        : null;
+      if (fileTypeKey) {
+        const update = {
+          $inc: {
+            [`fileTypeStats.${fileTypeKey}`]: 1,
+            [`fileSizeStats.${fileTypeKey}`]: fileSize / (1024 * 1024 * 1024) // convert bytes to GB
+          }
+        };
+        if (stats) {
+          await statsService.updateStats(stats._id, update);
+          console.log(`[POST /api/s3/sign-url] Stats updated for user: ${userId}`);
+        } else {
+          // Create new stats document for user
+          const newStats = {
+            user: userId,
+            fileTypeStats: { [fileTypeKey]: 1 },
+            fileSizeStats: { [fileTypeKey]: fileSize / (1024 * 1024 * 1024) },
+          };
+          await statsService.createStats(newStats);
+          console.log(`[POST /api/s3/sign-url] Stats created for user: ${userId}`);
+        }
+      }
+    } catch (statsErr) {
+      console.error('[POST /api/s3/sign-url] Stats update failed:', statsErr);
+    }
 
     res.json({ url, key });
   } catch (err) {

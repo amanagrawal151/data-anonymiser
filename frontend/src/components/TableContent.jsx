@@ -1,10 +1,11 @@
-
 import React, { useEffect, useState } from "react";
 
 const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 5;
 
   useEffect(() => {
     console.log("[TableContent] Fetching files from API...");
@@ -59,6 +60,9 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
     return true;
   });
 
+  // Pagination logic
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   if (loading) return <div className="container mt-5">Loading files...</div>;
   // Show error but still show table with example data
@@ -127,17 +131,17 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((row, idx) => (
-              <tr key={idx}>
+            {paginated.map((row, idx) => (
+              <tr key={idx + (page-1)*pageSize}>
                 <td style={{ width: "40px" }}>
                   <div className="custom-control custom-checkbox">
                     <input
                       className="custom-control-input"
                       type="checkbox"
                       value=""
-                      id={`cb${idx+2}`}
+                      id={`cb${idx+2+(page-1)*pageSize}`}
                     />
-                    <label className="custom-control-label" htmlFor={`cb${idx+2}`}></label>
+                    <label className="custom-control-label" htmlFor={`cb${idx+2+(page-1)*pageSize}`}></label>
                   </div>
                 </td>
                 <td>{row.name}</td>
@@ -148,6 +152,27 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
             ))}
           </tbody>
         </table>
+        <div className="d-flex justify-content-center mt-3">
+          <nav aria-label="Page navigation">
+            <ul className="pagination pagination-borderless">
+              <li className={`page-item${page === 1 ? ' disabled' : ''}`}>
+                <a className="page-link" href="#borderless" tabIndex="-1" onClick={e => {e.preventDefault(); if(page > 1) setPage(page-1);}}>
+                  <i className="icon">keyboard_arrow_left</i>
+                </a>
+              </li>
+              {Array.from({length: totalPages}, (_, i) => (
+                <li key={i+1} className={`page-item ml-2${page === i+1 ? ' active' : ''}`}>
+                  <a className="page-link" href="#borderless" onClick={e => {e.preventDefault(); setPage(i+1);}}>{i+1}</a>
+                </li>
+              ))}
+              <li className={`page-item ml-2${page === totalPages ? ' disabled' : ''}`}>
+                <a className="page-link pl-2" href="#borderless" onClick={e => {e.preventDefault(); if(page < totalPages) setPage(page+1);}}>
+                  Next <i className="icon">keyboard_arrow_right</i>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
       </div>
     </main>
   );

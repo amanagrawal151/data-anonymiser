@@ -93,7 +93,7 @@ const Home = (welcomeMessage) => {
           <Stepper
             steps={[
               { label: initStatus },
-              { label: uploadStatus },
+              { label: uploadStatus === 'ready' ? 'uploaded' : uploadStatus },
               { label: uploadStatus === 'ready' ? 'Processed' : 'Processing' },
               { label: 'Ready to download' },
             ]}
@@ -104,6 +104,12 @@ const Home = (welcomeMessage) => {
           />
         </div>
       </div>
+      {(initStatus === 'Initiated' && welcomeMessage.welcomeMessage === true && uploadStatus === 'uploading') &&
+      <h1 className="display-4 fw-bold text-center mt-5 mb-4" style={{letterSpacing: '1px', color: '#2b2b6e'}}>
+        Keep uploading multiple files on <span style={{color: '#007bff'}}>Data Anonymizer</span>!<br/>
+        <span className="fs-4 fw-normal text-secondary">Don't wait until one file is processed</span>
+      </h1>
+      }
       {initStatus === "Initiated" && 
       <>
         <Home welcomeMessage={false} />
