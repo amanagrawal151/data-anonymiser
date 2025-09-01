@@ -6,6 +6,7 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const pageSize = 5;
+  const [selected, setSelected] = useState([]);
 
   useEffect(() => {
     console.log("[TableContent] Fetching files from API...");
@@ -64,6 +65,43 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
+  // Handle checkbox change
+  const handleCheckboxChange = (idx, checked) => {
+    const id = idx + (page-1)*pageSize;
+    setSelected(prev => checked ? [...prev, id] : prev.filter(i => i !== id));
+  };
+  // Handle select all
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelected(paginated.map((_, idx) => idx + (page-1)*pageSize));
+    } else {
+      setSelected([]);
+    }
+  };
+  // Replace exportRows with API-based download
+  const exportRows = async (rows) => {
+    for (const r of rows) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/s3/download-url?fileName=${encodeURIComponent(r.name)}`);
+        const data = await res.json();
+        if (data.url) {
+          window.open(data.url, '_blank');
+        } else {
+          alert(`Download URL not found for ${r.name}`);
+        }
+      } catch {
+        alert(`Failed to get download URL for ${r.name}`);
+      }
+    }
+  };
+  const handleExportAll = () => {
+    exportRows(filtered);
+  };
+  const handleExportSelected = () => {
+    const rows = selected.map(i => filtered[i]).filter(Boolean);
+    exportRows(rows);
+  };
+
   if (loading) return <div className="container mt-5">Loading files...</div>;
   // Show error but still show table with example data
   // if (error) return <div className="container mt-5 text-danger">{error}</div>;
@@ -75,10 +113,10 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
     >
       <div className="container ">
         <div className="d-flex  gap-8px pt-16px justify-content-end">
-          <button className="btn btn-primary btn-md btn-icon-start active ">
+          <button className="btn btn-primary btn-md btn-icon-start active " onClick={handleExportAll}>
             <i className="icon">file_download</i>Export All
           </button>
-          <button className="btn btn-discreet-secondary btn-md btn-icon-start  ">
+          <button className="btn btn-discreet-secondary btn-md btn-icon-start  " onClick={handleExportSelected}>
             <i className="icon">file_download</i>Export selected
           </button>
         </div>
@@ -92,6 +130,8 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
                     type="checkbox"
                     value=""
                     id="cb1"
+                    checked={paginated.length > 0 && paginated.every((_, idx) => selected.includes(idx + (page-1)*pageSize))}
+                    onChange={e => handleSelectAll(e.target.checked)}
                   />
                   <label className="custom-control-label" htmlFor="cb1"></label>
                 </div>
@@ -140,6 +180,8 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
                       type="checkbox"
                       value=""
                       id={`cb${idx+2+(page-1)*pageSize}`}
+                      checked={selected.includes(idx + (page-1)*pageSize)}
+                      onChange={e => handleCheckboxChange(idx, e.target.checked)}
                     />
                     <label className="custom-control-label" htmlFor={`cb${idx+2+(page-1)*pageSize}`}></label>
                   </div>

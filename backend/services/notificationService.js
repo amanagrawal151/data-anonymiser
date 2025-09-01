@@ -27,10 +27,45 @@ const deleteNotification = async (id) => {
   return await Notification.findByIdAndDelete(id);
 };
 
+/**
+ * Create a notification for crypt (encrypt/decrypt) operations
+ * @param {Object} params - { user, fileType, cryptForm, success, fileName }
+ */
+const createCryptNotification = async ({ user, fileType, cryptForm, success, fileName }) => {
+  let title, details, bg;
+  if (success) {
+    title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Success`;
+    details = `${fileName} ${cryptForm === 'encryption' ? 'encrypted' : 'decrypted'} successfully.`;
+    bg = 'bg-success';
+  } else {
+    title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Failed`;
+    details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
+    bg = 'bg-danger';
+  }
+  // Get current date and time in Indian Standard Time (IST)
+  const now = new Date();
+  const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
+  const istDate = new Date(now.getTime() + istOffset);
+  const time = istDate.toLocaleString('en-IN', { hour12: true });
+  const notification = {
+    user,
+    title,
+    details,
+    fileType,
+    cryptForm,
+    time,
+    bg,
+    priority: !success,
+    unread: true,
+  };
+  return await createNotification(notification);
+};
+
 module.exports = {
   createNotification,
   getNotifications,
   getNotificationById,
   updateNotification,
   deleteNotification,
+  createCryptNotification,
 };

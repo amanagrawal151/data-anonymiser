@@ -136,11 +136,11 @@ const Notification = () => {
                           className="fs-12 fw-semibold text-dark flex-center overflow-hidden"
                           style={{ height: "24px", width: "24px" }}
                         >
-                          {n.serviceShort}
+                          {n.fileType}
                         </p>
                       </span>
                       <p className="font-weight-normal text-primary fw-medium fs-12">
-                        {n.serviceName}
+                        {n.cryptForm}
                       </p>
                     </div>
                     <div

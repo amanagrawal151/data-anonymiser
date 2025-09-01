@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const Sidebar = ({ show, setShow }) => {
-  const [user, setUser] = useState({ name: '', email: '', department: '' });
+  const [user, setUser] = useState({ name: '', email: '', department: '', _id: '' });
   const [visible, setVisible] = useState(show);
+  const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (show) setVisible(true);
@@ -16,16 +19,40 @@ const Sidebar = ({ show, setShow }) => {
           setUser({
             name: data[0].name || '',
             email: data[0].email || '',
-            department: data[0].department || ''
+            department: data[0].department || '',
+            _id: data[0]._id || ''
           });
         }
       })
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (!user._id) return;
+    fetch(`http://localhost:3000/api/notifications?user=${user._id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setNotifications(data.slice(0, 3));
+        }
+      })
+      .catch(() => {});
+  }, [user._id]);
+
   const handleClose = () => {
     setShow(false);
-    setTimeout(() => setVisible(false), 300); // match transition duration
+    setTimeout(() => setVisible(false), 300);
+  };
+
+  const handleSeeAll = (e) => {
+    e.preventDefault();
+    navigate('/notifications');
+  };
+
+  const handleSignOut = (e) => {
+    e.preventDefault();
+    console.log("signing out")
+    navigate('/auth');
   };
 
   if (!visible && !show) return null;
@@ -53,10 +80,10 @@ const Sidebar = ({ show, setShow }) => {
               <p class="badge badge-discreet-primary badge-prepend-square me-1">
                 Reader
               </p>
-              <sgwt-account-center
+              {/* <sgwt-account-center
                 available-languages="fr,en"
                 authentication="sg-connect-v2"
-              >
+              > */}
                 <span>
                   <div class="d-flex position-relative sgwt-account-center me-3">
                     <div class="position-relative">
@@ -97,7 +124,7 @@ const Sidebar = ({ show, setShow }) => {
                         <div class="text-capitalize text-truncate font-weight-medium fw-medium sgwt-account-center-user">
                           {user.name || 'User'}
                         </div>
-                        <button class="btn-signout border-0 p-0 btn btn-link text-left text-start font-weight-medium fw-medium justify-content-start btn-sm">
+                        <button onClick={handleSignOut} class="btn-signout border-0 p-0 btn btn-link text-left text-start font-weight-medium fw-medium justify-content-start btn-sm">
                           Sign out
                         </button>
                       </div>
@@ -105,7 +132,7 @@ const Sidebar = ({ show, setShow }) => {
                     </div>
                   </div>
                 </span>
-              </sgwt-account-center>
+              {/* </sgwt-account-center> */}
 
               <sgwt-help-center
                 sg-connect-support="sg-connect-v2"
@@ -232,7 +259,7 @@ const Sidebar = ({ show, setShow }) => {
             </button>
           </li>
           <li class="pr-1 pe-1 w-50">
-            <button class="btn btn-link btn-block btn-icon-text btn-icon-start btn-lg bg-lvl2 text-left justify-content-start text-truncate mb-1 pl-4 ps-4 sgwt-account-center-user-panel-sign-out-button">
+            <button class="btn btn-link btn-block btn-icon-text btn-icon-start btn-lg bg-lvl2 text-left justify-content-start text-truncate mb-1 pl-4 ps-4 sgwt-account-center-user-panel-sign-out-button" onClick={handleSignOut}>
               <i class="icon">power_settings_new</i>
               Sign out
             </button>
@@ -305,10 +332,7 @@ const Sidebar = ({ show, setShow }) => {
 
         <div class="d-flex justify-content-between mb-3 mx-4">
           <h3 class="h6 mb-0">Notifications</h3>
-          <a
-            href="https://digital.sgmarkets.com/notifications/#?producerCode=sgm_myservices"
-            target="_blank"
-          >
+          <a href="#" onClick={handleSeeAll}>
             See all
             <i class="icon icon-sm">arrow_forward</i>
           </a>
@@ -318,85 +342,31 @@ const Sidebar = ({ show, setShow }) => {
           <hr class="my-0" />
           <div>
             <ul class="list-group list-group-flush sgwt-notifications-list">
-              <a
-                class="list-group-item list-group-item-action border-0 flex-column align-items-start pt-16px pb-0 px-16px px-lg-24px sgwt-one-notification"
-                target="_blank"
-              >
-                <div class="d-flex">
-                  <div
-                    class="card border d-flex justify-content-center align-items-center essentials-card-icon text-black bg-white p-0 display-5 me-16px"
-                    style={{
-                      height: "46px",
-                      width: "46px",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <span class="fw-medium">F</span>
-                  </div>
-                  <div>
-                    <div class="font-weight-semibold text-success fw-semibold line-height-1 mb-1">
-                      Encryption successful 
+              {notifications.map((n, idx) => (
+                <a
+                  key={n._id || idx}
+                  class="list-group-item list-group-item-action border-0 flex-column align-items-start pt-16px pb-0 px-16px px-lg-24px sgwt-one-notification"
+                  target="_blank"
+                >
+                  <div class="d-flex">
+                    <div
+                      class="card border d-flex justify-content-center align-items-center essentials-card-icon text-black bg-white p-0 display-5 me-16px"
+                      style={{ height: "46px", width: "46px", borderRadius: "10px" }}
+                    >
+                      <span class="fw-medium">{n.fileType ? n.fileType[0].toUpperCase() : 'N'}</span>
                     </div>
-                    <div class="text-small fs-6 ">about 3 hours</div>
-                  </div>
-                </div>
-                <p class="my-0 py-3 text-secondary border-bottom">
-                  A file recently uploaded by you is successfully encrypted.
-                </p>
-              </a>
-              <a
-                class="list-group-item list-group-item-action border-0 flex-column align-items-start pt-3 pb-0 px-3 px-lg-4 sgwt-one-notification"
-                target="_blank"
-              >
-                <div class="d-flex">
-                  <div
-                    class="card border d-flex justify-content-center align-items-center essentials-card-icon text-black bg-white p-0 display-5 me-16px"
-                    style={{
-                      height: "46px",
-                      width: "46px",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <span class="fw-medium">I</span>
-                  </div>
-                  <div>
-                    <div class="font-weight-semibold text-danger fw-semibold line-height-1 mb-1">
-                      Decryption Failure
+                    <div>
+                      <div class={`font-weight-semibold ${n.bg === 'bg-success' ? 'text-success' : n.bg === 'bg-danger' ? 'text-danger' : ''} fw-semibold line-height-1 mb-1`}>
+                        {n.title}
+                      </div>
+                      <div class="text-small fs-6 ">{n.time}</div>
                     </div>
-                    <div class="text-small fs-6 ">about 1 month</div>
                   </div>
-                </div>
-                <p class="my-0 py-3 text-secondary border-bottom">
-                  Decryption failed due to invalid key.
-                </p>
-              </a>
-              <a
-                class="list-group-item list-group-item-action border-0 flex-column align-items-start pt-3 pb-0 px-3 px-lg-4"
-                target="_blank"
-              >
-                <div class="d-flex">
-                  <div
-                    class="card border d-flex justify-content-center align-items-center essentials-card-icon text-black bg-white p-0 display-5 me-16px"
-                    style={{
-                      height: "46px",
-                      width: "46px",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    <span class="fw-medium">I</span>
-                  </div>
-                  <div>
-                    <div class="font-weight-semibold fw-semibold line-height-1 mb-1">
-                      SG Markets Integration
-                    </div>
-                    <div class="text-small fs-6 ">about 2 months</div>
-                  </div>
-                </div>
-                <p class="my-0 py-3 text-secondary">
-                  A new task has been assigned to you for the integration of Web
-                  Pricer
-                </p>
-              </a>
+                  <p class="my-0 py-3 text-secondary border-bottom">
+                    {n.details}
+                  </p>
+                </a>
+              ))}
             </ul>
             <hr class="my-0" />
           </div>
