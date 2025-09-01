@@ -1,6 +1,4 @@
-
-
-const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose }) => {
+const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose, downloadUrl }) => {
   // Helper to format file size
   const formatSize = (size) => {
     if (!size) return '';
@@ -24,9 +22,24 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose 
               <span className="file-upload-size">{formatSize(fileSize)}</span>
             </div>
           </div>
-          <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
-            <em className="icon">close</em>
-          </button>
+          <div className="d-flex gap-2 mt-3">
+            {downloadUrl ? (
+              <a
+                href={downloadUrl}
+                className="btn btn-success btn-lg"
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <em className="icon">download</em> Download File
+              </a>
+            ) : (
+              <span className="text-warning align-self-center">Processing complete. Download link not available.</span>
+            )}
+            <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
+              <em className="icon">close</em>
+            </button>
+          </div>
         </div>
       </div>
     );

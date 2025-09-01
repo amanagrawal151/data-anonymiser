@@ -4,7 +4,6 @@ import Stepper from "../components/Stepper";
 import UploadStatus from "../components/upload-status";
 import Notification from "../components/notification";
 
-
 const Home = (welcomeMessage) => {
   const [showUploader, setShowUploader] = useState(true);
   const [showStatus, setShowStatus] = useState(false);
@@ -14,6 +13,7 @@ const Home = (welcomeMessage) => {
   const [initStatus, setInitStatus] = useState("Initiating");
   const [uploadStatus, setUploadStatus] = useState("uploading");
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [downloadUrl, setDownloadUrl] = useState(null);
 
   // Callback for FileUploader
   const handleUploadProgress = (status, progress, fileName) => {
@@ -37,6 +37,24 @@ const Home = (welcomeMessage) => {
     }
   };
 
+  // Callback for FileUploader to set downloadUrl
+  const handleSetDownloadUrl = (url) => {
+    setDownloadUrl(url);
+  };
+
+  // Reset state on close
+  const handleCloseStatus = () => {
+    setShowStatus(false);
+    setShowUploader(true);
+    setUploadStatus("uploading");
+    setUploadProgress(0);
+    setUploadedFileName("");
+    setDownloadUrl(null);
+    setStepperStep(0);
+    setStepperFailed(null);
+    setInitStatus("Initiating");
+  };
+
   return (
     <div className="container min-vh-100 d-flex flex-column justify-content-center align-items-center">
         {welcomeMessage.welcomeMessage === true ? 
@@ -54,12 +72,14 @@ const Home = (welcomeMessage) => {
       <div className="row w-100 justify-content-center">
         <div className="col-12 col-md-8 col-lg-6 d-flex flex-column align-items-center">
           {/* <Notification /> */}
-          {showUploader && <FileUploader onProgress={handleUploadProgress} />}
+          {showUploader && <FileUploader onProgress={handleUploadProgress} onUpload={setUploadedFileName} setDownloadUrl={handleSetDownloadUrl} />}
           {showStatus && (
             <UploadStatus
               fileName={uploadedFileName}
               uploadStatus={uploadStatus}
               progress={uploadProgress}
+              downloadUrl={downloadUrl}
+              onClose={handleCloseStatus}
             />
           )}
           <Stepper

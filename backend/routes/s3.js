@@ -1,4 +1,5 @@
 
+
 const express = require('express');
 const router = express.Router();
 
@@ -140,6 +141,58 @@ router.post('/download-to-local', async (req, res) => {
   } catch (err) {
     console.error('[POST /api/s3/download-to-local] Error:', err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/s3/download-url:
+ *   get:
+ *     summary: Generate a pre-signed S3 download URL for a file
+ *     tags: [S3]
+ *     parameters:
+ *       - in: query
+ *         name: fileName
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The name of the file to download
+ *     responses:
+ *       200:
+ *         description: Pre-signed download URL generated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 url:
+ *                   type: string
+ *       400:
+ *         description: fileName is required
+ *       404:
+ *         description: File not found
+ *       500:
+ *         description: Server error
+ */
+router.get('/download-url', async (req, res) => {
+  try {
+    const { fileName } = req.query;
+    if (!fileName) {
+      return res.status(400).json({ error: 'fileName is required' });
+    }
+    // Find file document by fileName
+    const File = require('../models/File');
+    const fileDoc = await File.findOne({ fileName });
+    if (!fileDoc) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    const { getSignedDownloadUrl } = require('../services/s3Service');
+    const bucket = process.env.AWS_S3_BUCKET;
+    const url = await getSignedDownloadUrl(bucket, fileDoc.key);
+    return res.json({ url });
+  } catch (err) {
+    console.error('[GET /api/s3/download-url] Error:', err);
+    res.status(500).json({ error: 'Failed to generate download URL' });
   }
 });
 
