@@ -54,10 +54,13 @@ const userService = require('../services/userService');
  */
 // Create user
 router.post('/', async (req, res) => {
+  console.log('[POST /api/users] Body:', req.body);
   try {
     const user = await userService.createUser(req.body);
+    console.log('[POST /api/users] User created:', user._id);
     res.status(201).json(user);
   } catch (err) {
+    console.error('[POST /api/users] Error:', err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -82,10 +85,12 @@ router.post('/', async (req, res) => {
  */
 // Get all users
 router.get('/', async (req, res) => {
+  console.log('[GET /api/users]');
   try {
     const users = await userService.getAllUsers();
     res.json(users);
   } catch (err) {
+    console.error('[GET /api/users] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -116,11 +121,16 @@ router.get('/', async (req, res) => {
  */
 // Get user by id
 router.get('/:id', async (req, res) => {
+  console.log('[GET /api/users/:id] Params:', req.params);
   try {
     const user = await userService.getUserById(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      console.warn('[GET /api/users/:id] User not found:', req.params.id);
+      return res.status(404).json({ error: 'User not found' });
+    }
     res.json(user);
   } catch (err) {
+    console.error('[GET /api/users/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -157,11 +167,16 @@ router.get('/:id', async (req, res) => {
  */
 // Update user
 router.put('/:id', async (req, res) => {
+  console.log('[PUT /api/users/:id] Params:', req.params, 'Body:', req.body);
   try {
     const user = await userService.updateUser(req.params.id, req.body);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      console.warn('[PUT /api/users/:id] User not found:', req.params.id);
+      return res.status(404).json({ error: 'User not found' });
+    }
     res.json(user);
   } catch (err) {
+    console.error('[PUT /api/users/:id] Error:', err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -188,11 +203,16 @@ router.put('/:id', async (req, res) => {
  */
 // Delete user
 router.delete('/:id', async (req, res) => {
+  console.log('[DELETE /api/users/:id] Params:', req.params);
   try {
     const user = await userService.deleteUser(req.params.id);
-    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      console.warn('[DELETE /api/users/:id] User not found:', req.params.id);
+      return res.status(404).json({ error: 'User not found' });
+    }
     res.json({ message: 'User deleted' });
   } catch (err) {
+    console.error('[DELETE /api/users/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });

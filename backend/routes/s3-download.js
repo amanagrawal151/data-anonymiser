@@ -7,12 +7,19 @@ const File = require('../models/File');
 
 // POST /api/s3/download-to-local
 router.post('/download-to-local', async (req, res) => {
+  console.log('[POST /api/s3/download-to-local] Body:', req.body);
   try {
     const { fileId } = req.body;
-    if (!fileId) return res.status(400).json({ error: 'fileId is required' });
+    if (!fileId) {
+      console.warn('[POST /api/s3/download-to-local] fileId is required');
+      return res.status(400).json({ error: 'fileId is required' });
+    }
 
     const fileDoc = await File.findById(fileId);
-    if (!fileDoc) return res.status(404).json({ error: 'File not found' });
+    if (!fileDoc) {
+      console.warn('[POST /api/s3/download-to-local] File not found:', fileId);
+      return res.status(404).json({ error: 'File not found' });
+    }
 
     const s3 = new AWS.S3();
     const params = {
@@ -28,12 +35,15 @@ router.post('/download-to-local', async (req, res) => {
     s3.getObject(params).createReadStream().pipe(fileStream);
 
     fileStream.on('close', () => {
+      console.log('[POST /api/s3/download-to-local] File downloaded to:', localPath);
       res.json({ message: 'File downloaded to local storage', localPath });
     });
     fileStream.on('error', err => {
+      console.error('[POST /api/s3/download-to-local] Error saving file locally:', err);
       res.status(500).json({ error: 'Failed to save file locally', details: err.message });
     });
   } catch (err) {
+    console.error('[POST /api/s3/download-to-local] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });

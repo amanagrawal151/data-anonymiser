@@ -40,10 +40,13 @@ const fileService = require('../services/fileService');
 // Create file
 // Get all files
 router.post('/', async (req, res) => {
+  console.log('[POST /api/files] Body:', req.body);
   try {
     const file = await fileService.createFile(req.body);
+    console.log('[POST /api/files] File created:', file._id);
     res.status(201).json(file);
   } catch (err) {
+    console.error('[POST /api/files] Error:', err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -63,10 +66,12 @@ router.post('/', async (req, res) => {
 // Get all files
 // Get file by id
 router.get('/', async (req, res) => {
+  console.log('[GET /api/files]');
   try {
     const files = await fileService.getAllFiles();
     res.json(files);
   } catch (err) {
+    console.error('[GET /api/files] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -94,11 +99,16 @@ router.get('/', async (req, res) => {
 // Get file by id
 // Update file
 router.get('/:id', async (req, res) => {
+  console.log('[GET /api/files/:id] Params:', req.params);
   try {
     const file = await fileService.getFileById(req.params.id);
-    if (!file) return res.status(404).json({ error: 'File not found' });
+    if (!file) {
+      console.warn('[GET /api/files/:id] File not found:', req.params.id);
+      return res.status(404).json({ error: 'File not found' });
+    }
     res.json(file);
   } catch (err) {
+    console.error('[GET /api/files/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -149,11 +159,16 @@ router.get('/:id', async (req, res) => {
 // Update file
 // Delete file
 router.put('/:id', async (req, res) => {
+  console.log('[PUT /api/files/:id] Params:', req.params, 'Body:', req.body);
   try {
     const file = await fileService.updateFile(req.params.id, req.body);
-    if (!file) return res.status(404).json({ error: 'File not found' });
+    if (!file) {
+      console.warn('[PUT /api/files/:id] File not found:', req.params.id);
+      return res.status(404).json({ error: 'File not found' });
+    }
     res.json(file);
   } catch (err) {
+    console.error('[PUT /api/files/:id] Error:', err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -181,11 +196,16 @@ router.put('/:id', async (req, res) => {
 // Delete file
 // Get files by user
 router.delete('/:id', async (req, res) => {
+  console.log('[DELETE /api/files/:id] Params:', req.params);
   try {
     const file = await fileService.deleteFile(req.params.id);
-    if (!file) return res.status(404).json({ error: 'File not found' });
+    if (!file) {
+      console.warn('[DELETE /api/files/:id] File not found:', req.params.id);
+      return res.status(404).json({ error: 'File not found' });
+    }
     res.json({ message: 'File deleted' });
   } catch (err) {
+    console.error('[DELETE /api/files/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -210,10 +230,12 @@ router.delete('/:id', async (req, res) => {
  * */
 // Get files by user
 router.get('/user/:userId', async (req, res) => {
+  console.log('[GET /api/files/user/:userId] Params:', req.params);
   try {
     const files = await fileService.getFilesByUser(req.params.userId);
     res.json(files);
   } catch (err) {
+    console.error('[GET /api/files/user/:userId] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });

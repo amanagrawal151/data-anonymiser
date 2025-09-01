@@ -19,9 +19,9 @@
  *           type: string
  *         details:
  *           type: string
- *         serviceShort:
+ *         fileType:
  *           type: string
- *         serviceName:
+ *         cryptForm:
  *           type: string
  *         time:
  *           type: string
@@ -34,8 +34,8 @@
  *         priority: false
  *         title: Sample Notification
  *         details: This is a sample notification. Your API is not responding.
- *         serviceShort: SMP
- *         serviceName: system
+ *         fileType: csv
+ *         cryptForm: encryption
  *         time: just now
  *         bg: bg-lvl1
  */
@@ -72,15 +72,21 @@ router.post('/',
   body('user').notEmpty(),
   body('title').notEmpty(),
   body('details').notEmpty(),
+  body('fileType').optional(),
+  body('cryptForm').optional(),
   async (req, res) => {
+    console.log('[POST /api/notifications] Body:', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.warn('[POST /api/notifications] Validation errors:', errors.array());
       return res.status(400).json({ errors: errors.array() });
     }
     try {
       const notification = await notificationService.createNotification(req.body);
+      console.log('[POST /api/notifications] Notification created:', notification._id);
       res.status(201).json(notification);
     } catch (err) {
+      console.error('[POST /api/notifications] Error:', err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -111,11 +117,13 @@ router.post('/',
  *         description: Server error
  */
 router.get('/', async (req, res) => {
+  console.log('[GET /api/notifications] Query:', req.query);
   try {
     const filter = req.query.user ? { user: req.query.user } : {};
     const notifications = await notificationService.getNotifications(filter);
     res.json(notifications);
   } catch (err) {
+    console.error('[GET /api/notifications] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -146,11 +154,16 @@ router.get('/', async (req, res) => {
  *         description: Server error
  */
 router.get('/:id', async (req, res) => {
+  console.log('[GET /api/notifications/:id] Params:', req.params);
   try {
     const notification = await notificationService.getNotificationById(req.params.id);
-    if (!notification) return res.status(404).json({ error: 'Not found' });
+    if (!notification) {
+      console.warn('[GET /api/notifications/:id] Notification not found:', req.params.id);
+      return res.status(404).json({ error: 'Not found' });
+    }
     res.json(notification);
   } catch (err) {
+    console.error('[GET /api/notifications/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -187,11 +200,16 @@ router.get('/:id', async (req, res) => {
  *         description: Server error
  */
 router.put('/:id', async (req, res) => {
+  console.log('[PUT /api/notifications/:id] Params:', req.params, 'Body:', req.body);
   try {
     const notification = await notificationService.updateNotification(req.params.id, req.body);
-    if (!notification) return res.status(404).json({ error: 'Not found' });
+    if (!notification) {
+      console.warn('[PUT /api/notifications/:id] Notification not found:', req.params.id);
+      return res.status(404).json({ error: 'Not found' });
+    }
     res.json(notification);
   } catch (err) {
+    console.error('[PUT /api/notifications/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
@@ -218,11 +236,16 @@ router.put('/:id', async (req, res) => {
  *         description: Server error
  */
 router.delete('/:id', async (req, res) => {
+  console.log('[DELETE /api/notifications/:id] Params:', req.params);
   try {
     const notification = await notificationService.deleteNotification(req.params.id);
-    if (!notification) return res.status(404).json({ error: 'Not found' });
+    if (!notification) {
+      console.warn('[DELETE /api/notifications/:id] Notification not found:', req.params.id);
+      return res.status(404).json({ error: 'Not found' });
+    }
     res.json({ message: 'Deleted' });
   } catch (err) {
+    console.error('[DELETE /api/notifications/:id] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });

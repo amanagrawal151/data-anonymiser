@@ -9,14 +9,16 @@ const Sidebar = ({ show, setShow }) => {
   }, [show]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/api/users/me')
+    fetch('http://localhost:3000/api/users')
       .then(res => res.json())
       .then(data => {
-        setUser({
-          name: data.name || '',
-          email: data.email || '',
-          department: data.department || ''
-        });
+        if (Array.isArray(data) && data.length > 0) {
+          setUser({
+            name: data[0].name || '',
+            email: data[0].email || '',
+            department: data[0].department || ''
+          });
+        }
       })
       .catch(() => {});
   }, []);

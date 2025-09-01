@@ -47,12 +47,15 @@ const mongoose = require('mongoose');
  */
 router.post('/sign-url', async (req, res) => {
   try {
+    console.log('[POST /api/s3/sign-url] Request body:', req.body);
     const { filename, contentType, fileSize, userId } = req.body;
     if (!filename || !contentType || !fileSize || !userId) {
+      console.warn('[POST /api/s3/sign-url] Missing required fields');
       return res.status(400).json({ error: 'filename, contentType, fileSize, and userId are required' });
     }
     const bucket = process.env.AWS_S3_BUCKET;
     const { url, key } = await getSignedUploadUrl(bucket, filename, contentType);
+    console.log(`[POST /api/s3/sign-url] Generated signed URL for file: ${filename}, key: ${key}`);
 
     // Save file document in DB
     await fileService.createFile({
@@ -63,10 +66,11 @@ router.post('/sign-url', async (req, res) => {
       key,
       stage: 'uploaded',
     });
+    console.log(`[POST /api/s3/sign-url] File record created for user: ${userId}`);
 
     res.json({ url, key });
   } catch (err) {
-    console.error(err);
+    console.error('[POST /api/s3/sign-url] Error:', err);
     res.status(500).json({ error: 'Failed to generate signed URL' });
   }
 });
@@ -110,12 +114,19 @@ router.post('/sign-url', async (req, res) => {
 // POST /api/s3/download-to-local
 router.post('/download-to-local', async (req, res) => {
   try {
+    console.log('[POST /api/s3/download-to-local] Request body:', req.body);
     const { fileId } = req.body;
-    if (!fileId) return res.status(400).json({ error: 'fileId is required' });
+    if (!fileId) {
+      console.warn('[POST /api/s3/download-to-local] fileId is required');
+      return res.status(400).json({ error: 'fileId is required' });
+    }
 
     const File = require('../models/File');
     const fileDoc = await File.findById(fileId);
-    if (!fileDoc) return res.status(404).json({ error: 'File not found' });
+    if (!fileDoc) {
+      console.warn(`[POST /api/s3/download-to-local] File not found: ${fileId}`);
+      return res.status(404).json({ error: 'File not found' });
+    }
 
     const localDir = require('path').join(__dirname, '../local_files');
     if (!require('fs').existsSync(localDir)) require('fs').mkdirSync(localDir);
@@ -123,9 +134,11 @@ router.post('/download-to-local', async (req, res) => {
 
     const { downloadFileFromS3 } = require('../services/s3Service');
     await downloadFileFromS3(process.env.AWS_S3_BUCKET, fileDoc.key, localPath);
+    console.log(`[POST /api/s3/download-to-local] Downloaded file ${fileDoc.fileName} to ${localPath}`);
 
     res.json({ message: 'File downloaded to local storage', localPath });
   } catch (err) {
+    console.error('[POST /api/s3/download-to-local] Error:', err);
     res.status(500).json({ error: err.message });
   }
 });
