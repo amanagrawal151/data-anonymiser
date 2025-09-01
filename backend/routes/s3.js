@@ -59,7 +59,7 @@ router.post('/sign-url', async (req, res) => {
 
     // Save file document in DB
     await fileService.createFile({
-      user: mongoose.Types.ObjectId(userId),
+      user: userId,
       fileName: filename,
       fileType: contentType,
       fileSize,

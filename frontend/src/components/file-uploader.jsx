@@ -20,6 +20,8 @@ const FileUploader = ({ onUpload }) => {
       body: JSON.stringify({
         filename: selectedFile.name,
         contentType: selectedFile.type || 'application/octet-stream',
+        fileSize: selectedFile.size,
+        userId: "<USER_ID> "
       }),
     });
     if (!res.ok) {
