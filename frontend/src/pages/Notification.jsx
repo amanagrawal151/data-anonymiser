@@ -4,12 +4,15 @@ const Notification = () => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
+    console.log("[Notification] Fetching notifications from API...");
     fetch("http://localhost:3000/api/notifications")
       .then((res) => res.json())
       .then((data) => {
+        console.log("[Notification] API response:", data);
         if (Array.isArray(data) && data.length > 0) {
           setNotifications(data);
         } else {
+          console.warn("[Notification] API returned no notifications, using fallback.");
           setNotifications([
             {
               id: 1,
@@ -26,7 +29,8 @@ const Notification = () => {
           ]);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("[Notification] Failed to fetch notifications, using fallback.", err);
         setNotifications([
           {
             id: 1,

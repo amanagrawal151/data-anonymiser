@@ -7,10 +7,12 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    console.log("[TableContent] Fetching files from API...");
     setLoading(true);
     fetch("http://localhost:3000/api/files")
       .then(res => res.json())
       .then(data => {
+        console.log("[TableContent] Files API response:", data);
         if (Array.isArray(data) && data.length > 0) {
           setTableData(
             data.map(f => ({
@@ -21,6 +23,7 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
             }))
           );
         } else {
+          console.warn("[TableContent] Files API returned no data, using fallback.");
           setTableData([
             { name: "sample1.csv", type: "CSV", date: "2023-01-01", status: "success" },
             { name: "sample2.xlsx", type: "Excel", date: "2023-01-02", status: "failed" },
@@ -30,6 +33,7 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
         setLoading(false);
       })
       .catch(err => {
+        console.error("[TableContent] Failed to fetch files, using fallback.", err);
         setError("Failed to fetch files");
         setTableData([
           { name: "sample1.csv", type: "CSV", date: "2023-01-01", status: "success" },

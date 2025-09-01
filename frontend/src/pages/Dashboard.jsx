@@ -25,22 +25,26 @@ const Dashboard = () => {
         fileSizeStats: { csv: 50, excel: 40, parquet: 30 }, // in GB
     };
 
-    useEffect(() => {
-        fetch("http://localhost:3000/api/stats")
-            .then((res) => res.json())
-            .then((data) => {
-                if (data && (data.fileTypeStats || data[0]?.fileTypeStats)) {
-                    setStats(Array.isArray(data) ? data[0] : data);
-                } else {
+        useEffect(() => {
+            console.log("[Dashboard] Fetching stats from API...");
+            fetch("http://localhost:3000/api/stats")
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("[Dashboard] Stats API response:", data);
+                    if (data && (data.fileTypeStats || data[0]?.fileTypeStats)) {
+                        setStats(Array.isArray(data) ? data[0] : data);
+                    } else {
+                        console.warn("[Dashboard] Stats API returned no usable data, using fallback.");
+                        setStats(fallback);
+                    }
+                    setLoading(false);
+                })
+                .catch((err) => {
+                    console.error("[Dashboard] Failed to fetch stats, using fallback.", err);
                     setStats(fallback);
-                }
-                setLoading(false);
-            })
-            .catch(() => {
-                setStats(fallback);
-                setLoading(false);
-            });
-    }, []);
+                    setLoading(false);
+                });
+        }, []);
 
     if (loading) return <div className="container mt-5">Loading stats...</div>;
 
