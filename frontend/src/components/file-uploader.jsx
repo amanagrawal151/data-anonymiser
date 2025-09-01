@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import UploadStatus from "./upload-status";
 
 
-const FileUploader = ({ onUpload, onProgress }) => {
+const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp }) => {
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -96,8 +96,11 @@ const FileUploader = ({ onUpload, onProgress }) => {
       }
       const { url: downloadUrlFromApi } = await cryptRes.json();
       setDownloadUrl(downloadUrlFromApi);
-      setUploadStatus('uploaded');
-      if (onProgress) onProgress('uploaded', 100, selectedFile.name);
+      if (typeof setDownloadUrlProp === 'function') {
+        setDownloadUrlProp(downloadUrlFromApi);
+      }
+      setUploadStatus('ready'); // Set status to 'ready' for ready-to-download state
+      if (onProgress) onProgress('ready', 100, selectedFile.name);
       if (onUpload) onUpload(selectedFile.name);
     } catch (err) {
       setUploadStatus('failed');
