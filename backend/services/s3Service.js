@@ -33,6 +33,26 @@ async function getSignedUploadUrl(bucket, filename, contentType, expires = 300) 
 
 
 /**
+ * Generate a signed URL for downloading a file from S3
+ * @param {string} bucket - S3 bucket name
+ * @param {string} key - S3 object key
+ * @param {number} expires - Expiry time in seconds (default: 300)
+ * @returns {Promise<string>} - Signed download URL
+ */
+async function getSignedDownloadUrl(bucket, key, expires = 300) {
+  console.log('[s3Service] Generating signed download URL:', { bucket, key, expires });
+  const params = {
+    Bucket: bucket,
+    Key: key,
+    Expires: expires,
+  };
+  const url = await s3.getSignedUrlPromise('getObject', params);
+  console.log('[s3Service] Signed download URL generated:', { key });
+  return url;
+}
+
+
+/**
  * Download a file from S3 and save it to a local path
  * @param {string} bucket - S3 bucket name
  * @param {string} key - File key in S3
@@ -112,6 +132,7 @@ async function uploadFileToS3(buffer, key, contentType, bucket = process.env.AWS
 
 module.exports = {
   getSignedUploadUrl,
+  getSignedDownloadUrl,
   downloadFileFromS3,
   getFileBufferFromS3,
   uploadFileToS3,
