@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification, Trainer, TrainingArguments
 import torch
 import os
+import numpy as np
 
 def load_and_prepare_data(csv_path):
     df = pd.read_csv(csv_path, dtype=str).fillna("")
@@ -71,6 +72,30 @@ def predict_pii_bert(input_array, model_path="pii_bert"):
         preds = torch.argmax(outputs.logits, dim=1).numpy()
     return preds
 
+
+def evaluate_model_on_csv(csv_path, model_path="pii_bert"):
+    df = load_and_prepare_data(csv_path)
+    y_true = np.array(df["label"])
+    y_pred = predict_pii_bert(list(df["value"]), model_path=model_path)
+
+    # Calculate confusion matrix components
+    TP = np.sum((y_true == 1) & (y_pred == 1))
+    TN = np.sum((y_true == 0) & (y_pred == 0))
+    FP = np.sum((y_true == 0) & (y_pred == 1))
+    FN = np.sum((y_true == 1) & (y_pred == 0))
+
+    total = TP + TN + FP + FN
+
+    print(f"True Positive (TP): {TP} ({TP/total:.2%})")
+    print(f"True Negative (TN): {TN} ({TN/total:.2%})")
+    print(f"False Positive (FP): {FP} ({FP/total:.2%})")
+    print(f"False Negative (FN): {FN} ({FN/total:.2%})")
+
+    return {
+        "TP": TP, "TN": TN, "FP": FP, "FN": FN,
+        "TP%": TP/total, "TN%": TN/total, "FP%": FP/total, "FN%": FN/total
+    }
+
 if __name__ == "__main__":
 
     model_path = "pii_bert"
@@ -96,8 +121,13 @@ if __name__ == "__main__":
         "+91 7091071590"
     ]
     results = predict_pii_bert(test_data)
+    result_map = {k: int(v) for k, v in zip(test_data, results)}
+    print(result_map)
     for val, is_pii in zip(test_data, results):
         print(f"{val!r} => {'PII' if is_pii else 'Not PII'}")
+
+    # print("\nEvaluating on full labeled dataset:")
+    # evaluate_model_on_csv("../data/fusion_matrix-dataset.csv")
 
 
 

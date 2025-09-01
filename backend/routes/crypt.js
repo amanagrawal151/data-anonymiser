@@ -51,10 +51,16 @@ router.post('/encrypt-file', async (req, res) => {
     const { getFileBufferFromS3, uploadFileToS3, getSignedDownloadUrl } = require('../services/s3Service');
     // Download file from S3
     const buffer = await getFileBufferFromS3(bucket, key);
-    // (Optional) Encrypt buffer here if needed
-    // Upload buffer back to S3 (to a new key, e.g., processed/)
-    const processedKey = `processed/${Date.now()}_${fileName}`;
-    await uploadFileToS3(buffer, processedKey, fileType, bucket);
+    // Save buffer to a temp file
+    const tempFilePath = path.join(__dirname, '..', 'tmp', `${Date.now()}_${fileName}`);
+    fs.writeFileSync(tempFilePath, buffer);
+    // Encrypt the file
+    const { encryptedFilePath } = await cryptService.encryptFile(tempFilePath);
+    // Read encrypted file buffer
+    const encryptedBuffer = fs.readFileSync(encryptedFilePath);
+    // Upload encrypted buffer back to S3 (to a new key, e.g., processed/)
+    const processedKey = `processed/${Date.now()}_${path.basename(encryptedFilePath)}`;
+    await uploadFileToS3(encryptedBuffer, processedKey, fileType, bucket);
     // Update the file's key in the DB
     await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
     // Update stats for success file
@@ -140,10 +146,16 @@ router.post('/decrypt-file', async (req, res) => {
     const { getFileBufferFromS3, uploadFileToS3, getSignedDownloadUrl } = require('../services/s3Service');
     // Download file from S3
     const buffer = await getFileBufferFromS3(bucket, key);
-    // (Optional) Decrypt buffer here if needed
-    // Upload buffer back to S3 (to a new key, e.g., processed/)
-    const processedKey = `processed/${Date.now()}_${fileName}`;
-    await uploadFileToS3(buffer, processedKey, fileType, bucket);
+    // Save buffer to a temp file
+    const tempFilePath = path.join(__dirname, '..', 'tmp', `${Date.now()}_${fileName}`);
+    fs.writeFileSync(tempFilePath, buffer);
+    // Decrypt the file
+    const { decryptedFilePath } = await cryptService.decryptFile(tempFilePath);
+    // Read decrypted file buffer
+    const decryptedBuffer = fs.readFileSync(decryptedFilePath);
+    // Upload decrypted buffer back to S3 (to a new key, e.g., processed/)
+    const processedKey = `processed/${Date.now()}_${path.basename(decryptedFilePath)}`;
+    await uploadFileToS3(decryptedBuffer, processedKey, fileType, bucket);
     // Update the file's key in the DB
     await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
     // Update stats for success file
