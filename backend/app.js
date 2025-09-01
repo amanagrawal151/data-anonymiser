@@ -1,6 +1,6 @@
 // Notification route
 const notificationRouter = require('./routes/notification');
-app.use('/api/notifications', notificationRouter);
+
 // Load environment variables first
 require('dotenv').config();
 
@@ -54,7 +54,7 @@ app.use('/api/crypt', cryptRouter);
 // Upload route
 const uploadRouter = require('./routes/upload');
 app.use('/api/upload', uploadRouter);
-
+app.use('/api/notifications', notificationRouter);
 // Swagger setup
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
