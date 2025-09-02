@@ -12,7 +12,7 @@ const Notification = () => {
       .then((data) => {
         console.log("[Notification] API response:", data);
         if (Array.isArray(data) && data.length > 0) {
-          setNotifications(data.reverse());
+          setNotifications(data);
         } else {
           console.warn("[Notification] API returned no notifications, using fallback.");
           setNotifications([
