@@ -1,5 +1,21 @@
 const Notification = require('../models/Notification');
 
+function getRelativeTime(date) {
+  const now = new Date();
+  const diffMs = now - date;
+  const diffSec = Math.floor(diffMs / 1000);
+  if (diffSec < 60) return 'just now';
+  const diffMin = Math.floor(diffSec / 60);
+  if (diffMin === 1) return '1 minute ago';
+  if (diffMin < 60) return `${diffMin} minutes ago`;
+  const diffHr = Math.floor(diffMin / 60);
+  if (diffHr === 1) return 'an hour ago';
+  if (diffHr < 24) return `${diffHr} hours ago`;
+  const diffDay = Math.floor(diffHr / 24);
+  if (diffDay === 1) return 'a day ago';
+  return `${diffDay} days ago`;
+}
+
 const createNotification = async (data) => {
   console.log('[notificationService] Creating notification with data:', data);
   const result = await Notification.create(data);
@@ -32,21 +48,24 @@ const deleteNotification = async (id) => {
  * @param {Object} params - { user, fileType, cryptForm, success, fileName }
  */
 const createCryptNotification = async ({ user, fileType, cryptForm, success, fileName }) => {
-  let title, details, bg;
+  let title, details, bg , priority;
   if (success) {
     title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Success`;
     details = `${fileName} ${cryptForm === 'encryption' ? 'encrypted' : 'decrypted'} successfully.`;
     bg = 'bg-lvl1';
+    priority = false
   } else {
     title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Failed`;
     details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
+    bg = 'bg-lvl2';
+    priority = true;
     bg = 'bg-lvl2';
     priority = true;
   }
   // Save time as ISO string for consistency
   const time = new Date().toISOString();
   const notification = {
-    user,
+    user : "68b36f80cb1d579c7f9f2e5a" || user,
     title,
     details,
     fileType : fileName?.split('.').pop() || fileType,

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 const Notification = () => {
   const [notifications, setNotifications] = useState([]);
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
     console.log("[Notification] Fetching notifications from API...");
@@ -10,7 +12,7 @@ const Notification = () => {
       .then((data) => {
         console.log("[Notification] API response:", data);
         if (Array.isArray(data) && data.length > 0) {
-          setNotifications(data);
+          setNotifications(data.reverse());
         } else {
           console.warn("[Notification] API returned no notifications, using fallback.");
           setNotifications([
@@ -48,6 +50,9 @@ const Notification = () => {
       });
   }, []);
 
+  const totalPages = Math.ceil(notifications.length / pageSize);
+  const paginated = notifications.slice((page - 1) * pageSize, page * pageSize);
+
   return (
     <>
       <style>{`
@@ -75,7 +80,7 @@ const Notification = () => {
         <div className="row">
           <div className="col p-5">
             <div className="notification-grid border border-bottom-0 border-opacity-40">
-              {notifications.map((n) => {
+              {paginated.map((n) => {
                 const Tag = n.unread
                   ? n.bg === "bg-lvl1"
                     ? "article"
@@ -153,6 +158,27 @@ const Notification = () => {
                   </Tag>
                 );
               })}
+            </div>
+            <div className="d-flex justify-content-center mt-3">
+              <nav aria-label="Page navigation">
+                <ul className="pagination pagination-borderless">
+                  <li className={`page-item${page === 1 ? ' disabled' : ''}`}>
+                    <a className="page-link" href="#" tabIndex="-1" onClick={e => {e.preventDefault(); if(page > 1) setPage(page-1);}}>
+                      <i className="icon">keyboard_arrow_left</i>
+                    </a>
+                  </li>
+                  {Array.from({length: totalPages}, (_, i) => (
+                    <li key={i+1} className={`page-item ml-2${page === i+1 ? ' active' : ''}`}>
+                      <a className="page-link" href="#" onClick={e => {e.preventDefault(); setPage(i+1);}}>{i+1}</a>
+                    </li>
+                  ))}
+                  <li className={`page-item ml-2${page === totalPages ? ' disabled' : ''}`}>
+                    <a className="page-link pl-2" href="#" onClick={e => {e.preventDefault(); if(page < totalPages) setPage(page+1);}}>
+                      Next <i className="icon">keyboard_arrow_right</i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
             </div>
           </div>
         </div>

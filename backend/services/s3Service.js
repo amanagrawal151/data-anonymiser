@@ -47,7 +47,7 @@ async function getSignedDownloadUrl(bucket, key, expires = 300) {
     Expires: expires,
   };
   const url = await s3.getSignedUrlPromise('getObject', params);
-  console.log('[s3Service] Signed download URL generated:', { key });
+  console.log('[s3Service] Signed download URL generated:', { key , url });
   return url;
 }
 

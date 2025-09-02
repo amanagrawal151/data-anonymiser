@@ -59,7 +59,7 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
     // End date
     if (endDate && row.date > endDate) return false;
     return true;
-  });
+  }).reverse();
 
   // Pagination logic
   const totalPages = Math.ceil(filtered.length / pageSize);
@@ -85,7 +85,13 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
         const res = await fetch(`http://localhost:3000/api/s3/download-url?fileName=${encodeURIComponent(r.name)}`);
         const data = await res.json();
         if (data.url) {
-          window.open(data.url, '_blank');
+          const link = document.createElement('a');
+          link.href = data.url;
+          link.download = r.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          await new Promise(resolve => setTimeout(resolve, 500)); // Small delay to avoid popup blocking
         } else {
           alert(`Download URL not found for ${r.name}`);
         }
