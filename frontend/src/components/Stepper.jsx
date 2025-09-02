@@ -1,4 +1,3 @@
-
 import React from "react";
 
 /**
@@ -28,7 +27,11 @@ const Stepper = ({
         let indicator = null;
         if (failed === idx) {
           stepClass += "stepper-step-failed text-danger";
-          indicator = <span className="icon stepper-indicator-failed">close</span>;
+          indicator = (
+            <svg width="24" height="24" viewBox="0 0 24 24" className="icon stepper-indicator-failed" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+              <circle cx="12" cy="12" r="12" fill="red" />
+            </svg>
+          );
         } else if (idx < current) {
           stepClass += `fill ${completedColor}`;
           indicator = <span className="icon stepper-indicator-complete">check</span>;
@@ -46,7 +49,7 @@ const Stepper = ({
             </div>
             <span className="stepper-label">
               {step.label}
-              {failed === idx && <span className="ms-2 text-danger">Failed</span>}
+              {failed === idx && <span className="ms-2 text-danger"></span>}
             </span>
           </li>
         );
