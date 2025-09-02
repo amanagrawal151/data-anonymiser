@@ -65,7 +65,7 @@ router.post('/encrypt-file', async (req, res) => {
     // Update the file's key in the DB
     await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
     // Update stats for success file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'success');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'success');
     // Create notification for success
     await notificationService.createCryptNotification({
       user:  "68b36f80cb1d579c7f9f2e5a" || userId,
@@ -86,7 +86,7 @@ router.post('/encrypt-file', async (req, res) => {
       console.error('[POST /api/crypt/encrypt-file] DB update error:', dbErr);
     }
     // Update stats for failed file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'failure');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'failure');
     // Create notification for failure
     await notificationService.createCryptNotification({
       user: "68b36f80cb1d579c7f9f2e5a" || userId,
@@ -160,7 +160,7 @@ router.post('/decrypt-file', async (req, res) => {
     // Update the file's key in the DB
     await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
     // Update stats for success file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'success');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'success');
     // Create notification for success
     await notificationService.createCryptNotification({
       user: "68b36f80cb1d579c7f9f2e5a" || userId,
@@ -181,7 +181,7 @@ router.post('/decrypt-file', async (req, res) => {
       console.error('[POST /api/crypt/decrypt-file] DB update error:', dbErr);
     }
     // Update stats for failed file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'failure');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'failure');
     // Create notification for failure
     await notificationService.createCryptNotification({
       user: "68b36f80cb1d579c7f9f2e5a" || userId,
