@@ -31,6 +31,7 @@ const Home = (welcomeMessage) => {
     }
     if (status === 'uploaded') {
       setUploadStatus('uploaded');
+      setProcessingStatus('processing');
       setStepperStep(2);
       setStepperFailed(null);
     }
@@ -40,19 +41,22 @@ const Home = (welcomeMessage) => {
       setStepperFailed(1);
     }
     if (status === 'processing') {
+      setUploadStatus('uploaded');
       setProcessingStatus('processing');
       setStepperStep(3);
       setStepperFailed(null);
     }
     if (status === 'processed') {
       setProcessingStatus('processed');
+      setUploadStatus('uploaded')
       setStepperStep(4);
       setStepperFailed(null);
     }
     if (status === 'failed-processing') {
       setProcessingStatus('failed');
-      setStepperStep(3);
-      setStepperFailed(3);
+      setUploadStatus('uploaded')
+      setStepperStep(2);
+      setStepperFailed(2);
     }
     setUploadProgress(progress);
   };

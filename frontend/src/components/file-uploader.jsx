@@ -102,7 +102,7 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       }
       if (!cryptRes.ok) {
         console.error('[FileUploader] Crypt API failed:', cryptRes.status, await cryptRes.text());
-        setProcessingStatus('failed');
+        setProcessingStatus('failed-processing');
         if (onProgress) onProgress('failed-processing', 100, selectedFile.name);
         alert('Failed to process file');
         return;

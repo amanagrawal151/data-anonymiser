@@ -42,11 +42,8 @@ const createCryptNotification = async ({ user, fileType, cryptForm, success, fil
     details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
     bg = 'bg-danger';
   }
-  // Get current date and time in Indian Standard Time (IST)
-  const now = new Date();
-  const istOffset = 5.5 * 60 * 60 * 1000; // IST is UTC+5:30
-  const istDate = new Date(now.getTime() + istOffset);
-  const time = istDate.toLocaleString('en-IN', { hour12: true });
+  // Save time as ISO string for consistency
+  const time = new Date().toISOString();
   const notification = {
     user,
     title,
