@@ -1,7 +1,8 @@
 const express = require('express');
 const cryptService = require('../services/cryptService');
 const router = express.Router();
-
+const path = require('path');
+const fs = require('fs');
 
 /**
  * @swagger
@@ -67,7 +68,7 @@ router.post('/encrypt-file', async (req, res) => {
     await statsService.updateStatsForFileOutcome(userId, fileType, 'success');
     // Create notification for success
     await notificationService.createCryptNotification({
-      user: userId,
+      user:  "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'encryption',
       success: true,
@@ -88,7 +89,7 @@ router.post('/encrypt-file', async (req, res) => {
     await statsService.updateStatsForFileOutcome(userId, fileType, 'failure');
     // Create notification for failure
     await notificationService.createCryptNotification({
-      user: userId,
+      user: "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'encryption',
       success: false,
@@ -162,7 +163,7 @@ router.post('/decrypt-file', async (req, res) => {
     await statsService.updateStatsForFileOutcome(userId, fileType, 'success');
     // Create notification for success
     await notificationService.createCryptNotification({
-      user: userId,
+      user: "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'decryption',
       success: true,
@@ -183,7 +184,7 @@ router.post('/decrypt-file', async (req, res) => {
     await statsService.updateStatsForFileOutcome(userId, fileType, 'failure');
     // Create notification for failure
     await notificationService.createCryptNotification({
-      user: userId,
+      user: "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'decryption',
       success: false,

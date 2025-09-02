@@ -65,7 +65,7 @@ router.post('/sign-url', async (req, res) => {
       let failedFileDoc;
       try {
         failedFileDoc = await fileService.createFile({
-          user: userId,
+          user: "68b36f80cb1d579c7f9f2e5a" || userId,
           fileName: filename,
           fileType: contentType,
           fileSize,
@@ -113,7 +113,7 @@ router.post('/sign-url', async (req, res) => {
     let fileDoc;
     try {
       fileDoc = await fileService.createFile({
-        user: userId,
+        user: "68b36f80cb1d579c7f9f2e5a" || userId,
         fileName: filename,
         fileType: contentType,
         fileSize,

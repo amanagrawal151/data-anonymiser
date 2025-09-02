@@ -42,7 +42,7 @@ const deleteStats = async (id) => {
  */
 const updateStatsForFileOutcome = async (userId, fileType, outcome) => {
   try {
-    const stats = await getStatsByUser(userId);
+    const stats = await getStatsByUser("68b36f80cb1d579c7f9f2e5a" || userId);
     const fileTypeKey = (fileType.toLowerCase().includes('csv')) ? 'csv'
       : (fileType.toLowerCase().includes('excel') || fileType.toLowerCase().includes('xlsx')) ? 'excel'
       : (fileType.toLowerCase().includes('parquet')) ? 'parquet'
@@ -58,7 +58,7 @@ const updateStatsForFileOutcome = async (userId, fileType, outcome) => {
       console.log(`[statsService] Stats updated for ${outcome} file for user: ${userId}`);
     } else {
       const newStats = {
-        user: userId,
+        user: "68b36f80cb1d579c7f9f2e5a" || userId,
         fileStatusStats: { [outcome]: 1 },
       };
       await createStats(newStats);

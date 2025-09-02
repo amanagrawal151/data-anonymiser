@@ -36,11 +36,12 @@ const createCryptNotification = async ({ user, fileType, cryptForm, success, fil
   if (success) {
     title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Success`;
     details = `${fileName} ${cryptForm === 'encryption' ? 'encrypted' : 'decrypted'} successfully.`;
-    bg = 'bg-success';
+    bg = 'bg-lvl1';
   } else {
     title = `${cryptForm === 'encryption' ? 'Encryption' : 'Decryption'} Failed`;
     details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
-    bg = 'bg-danger';
+    bg = 'bg-lvl2';
+    priority = true;
   }
   // Save time as ISO string for consistency
   const time = new Date().toISOString();
@@ -48,7 +49,7 @@ const createCryptNotification = async ({ user, fileType, cryptForm, success, fil
     user,
     title,
     details,
-    fileType,
+    fileType : fileName?.split('.').pop() || fileType,
     cryptForm,
     time,
     bg,

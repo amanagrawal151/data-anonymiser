@@ -6,3 +6,5 @@ pydantic
 transformers
 torch
 scikit-learn
+pyarrow
+uvicorn
