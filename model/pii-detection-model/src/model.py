@@ -4,6 +4,8 @@ from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassific
 import torch
 import os
 import numpy as np
+import openpyxl
+from openpyxl.styles import PatternFill
 
 def load_and_prepare_data(csv_path):
     df = pd.read_csv(csv_path, dtype=str).fillna("")
@@ -73,6 +75,9 @@ def predict_pii_bert(input_array, model_path="pii_bert"):
     return preds
 
 
+
+################################################# evaluation
+
 def evaluate_model_on_csv(csv_path, model_path="pii_bert"):
     df = load_and_prepare_data(csv_path)
     y_true = np.array(df["label"])
@@ -95,6 +100,55 @@ def evaluate_model_on_csv(csv_path, model_path="pii_bert"):
         "TP": TP, "TN": TN, "FP": FP, "FN": FN,
         "TP%": TP/total, "TN%": TN/total, "FP%": FP/total, "FN%": FN/total
     }
+
+def save_fusion_matrix_results_xlsx(input_csv, output_xlsx, model_path="pii_bert"):
+    df = pd.read_csv(input_csv, dtype=str).fillna("")
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    # Write header
+    ws.append(list(df.columns))
+
+    # Color mapping
+    color_map = {
+        "TP": "90ee90",    # light green
+        "TN": "add8e6",    # light blue
+        "FP": "ff7f7f",    # light red
+        "FN": "ffd580",    # light orange
+    }
+
+    for idx, row in df.iterrows():
+        excel_row = []
+        fills = []
+        for col in df.columns:
+            val = row[col]
+            if col.endswith('_label'):
+                value_col = col[:-6].strip()
+                value = row[value_col]
+                true = 1 if str(val).lower() == "true" else 0
+                pred = predict_pii_bert([value], model_path=model_path)[0]
+                # Determine confusion type
+                if true == 1 and pred == 1:
+                    confusion = "TP"
+                elif true == 0 and pred == 0:
+                    confusion = "TN"
+                elif true == 0 and pred == 1:
+                    confusion = "FP"
+                elif true == 1 and pred == 0:
+                    confusion = "FN"
+                excel_row.append(val)
+                fills.append(PatternFill(start_color=color_map[confusion], end_color=color_map[confusion], fill_type="solid"))
+            else:
+                excel_row.append(val)
+                fills.append(None)
+        ws.append(excel_row)
+        # Apply fills
+        for col_idx, fill in enumerate(fills, 1):
+            if fill:
+                ws.cell(row=ws.max_row, column=col_idx).fill = fill
+
+    wb.save(output_xlsx)
+    print(f"Fusion matrix results saved to {output_xlsx}")
 
 if __name__ == "__main__":
 
@@ -126,8 +180,9 @@ if __name__ == "__main__":
     for val, is_pii in zip(test_data, results):
         print(f"{val!r} => {'PII' if is_pii else 'Not PII'}")
 
-    # print("\nEvaluating on full labeled dataset:")
-    # evaluate_model_on_csv("../data/fusion_matrix-dataset.csv")
+    print("\nEvaluating on full labeled dataset:")
+    evaluate_model_on_csv("../data/fusion_matrix-dataset.csv")
+    save_fusion_matrix_results_xlsx("../data/fusion_matrix-dataset.csv", "../data/fusion_matrix_dataset_result.xlsx")
 
 
 
