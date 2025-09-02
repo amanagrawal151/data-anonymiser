@@ -4,6 +4,111 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 
+
+/**
+ * @swagger
+ * /api/crypt/file-encryption:
+ *   post:
+ *     summary: Encrypt a local file using the cryptService
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               filepath:
+ *                 type: string
+ *                 description: Absolute path to the file to encrypt
+ *     responses:
+ *       200:
+ *         description: Encryption result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 colResult:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 encryptedFilePath:
+ *                   type: string
+ *       400:
+ *         description: Filepath is required or file does not exist
+ *       500:
+ *         description: Server error
+ */
+router.post('/file-encryption', async (req, res) => {
+  const { filepath } = req.body;
+  if (!filepath || typeof filepath !== 'string') {
+    return res.status(400).json({ error: 'filepath is required and must be a string' });
+  }
+  if (!fs.existsSync(filepath)) {
+    return res.status(400).json({ error: 'File does not exist at the provided path' });
+  }
+  try {
+    const result = await cryptService.encryptFile(filepath);
+    res.json(result);
+  } catch (err) {
+    console.error('[POST /api/crypt/file-encryption] Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/crypt/file-decryption:
+ *   post:
+ *     summary: Decrypt a local file using the cryptService
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               filepath:
+ *                 type: string
+ *                 description: Absolute path to the file to decrypt
+ *     responses:
+ *       200:
+ *         description: Decryption result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 decryptedColumns:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 decryptedFilePath:
+ *                   type: string
+ *       400:
+ *         description: Filepath is required or file does not exist
+ *       500:
+ *         description: Server error
+ */
+router.post('/file-decryption', async (req, res) => {
+  const { filepath } = req.body;
+  if (!filepath || typeof filepath !== 'string') {
+    return res.status(400).json({ error: 'filepath is required and must be a string' });
+  }
+  if (!fs.existsSync(filepath)) {
+    return res.status(400).json({ error: 'File does not exist at the provided path' });
+  }
+  try {
+    const result = await cryptService.decryptFile(filepath);
+    res.json(result);
+  } catch (err) {
+    console.error('[POST /api/crypt/file-decryption] Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /**
  * @swagger
  * /api/crypt/encrypt-file:

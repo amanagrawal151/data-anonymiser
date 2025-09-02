@@ -2,7 +2,7 @@ backend/node_modules
 frontend/node_modules
 backend/.env
 backend/package-lock.json
-model/pii-detection-model/src/_pycache__
+model/pii-detection-model/src/__pycache__
 model/pii-detection-model/src/results
 model/pii-detection-model/src/pii_bert
 backend/tmp
