@@ -33,7 +33,7 @@ const Sidebar = ({ show, setShow }) => {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
-          setNotifications(data.reverse().slice(0, 5));
+          setNotifications(data.slice(0, 5));
         }
       })
       .catch(() => {});
@@ -175,7 +175,7 @@ const Sidebar = ({ show, setShow }) => {
             style={{ height: "64px", width: "64px" }}
           >
             <span class="text-secondary text-uppercase display-4 align-self-center">
-              JD
+              AA
             </span>
           </div>
           <div

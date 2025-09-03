@@ -65,7 +65,7 @@ router.post('/sign-url', async (req, res) => {
       let failedFileDoc;
       try {
         failedFileDoc = await fileService.createFile({
-          user: "68b36f80cb1d579c7f9f2e5a" || userid,
+          user: "68b36f80cb1d579c7f9f2e5a" || userId,
           fileName: filename,
           fileType: contentType,
           fileSize,
@@ -80,9 +80,9 @@ router.post('/sign-url', async (req, res) => {
       try {
         const statsService = require('../services/statsService');
         const stats = await statsService.getStatsByUser("68b36f80cb1d579c7f9f2e5a" || userid);
-        const fileTypeKey = (contentType.toLowerCase().includes('csv')) ? 'csv'
-          : (contentType.toLowerCase().includes('excel') || contentType.toLowerCase().includes('xlsx')) ? 'excel'
-          : (contentType.toLowerCase().includes('parquet')) ? 'parquet'
+        const fileTypeKey = (filename.toLowerCase().includes('csv')) ? 'csv'
+          : (filename.toLowerCase().includes('excel') || filename.toLowerCase().includes('xlsx')) ? 'excel'
+          : (filename.toLowerCase().includes('parquet')) ? 'parquet'
           : null;
         if (fileTypeKey) {
           const update = {
@@ -113,7 +113,7 @@ router.post('/sign-url', async (req, res) => {
     let fileDoc;
     try {
       fileDoc = await fileService.createFile({
-        user: "68b36f80cb1d579c7f9f2e5a" || userid,
+        user: "68b36f80cb1d579c7f9f2e5a" || userId,
         fileName: filename,
         fileType: contentType,
         fileSize,
@@ -127,9 +127,9 @@ router.post('/sign-url', async (req, res) => {
       try {
         const statsService = require('../services/statsService');
         const stats = await statsService.getStatsByUser("68b36f80cb1d579c7f9f2e5a" || userid);
-        const fileTypeKey = (contentType.toLowerCase().includes('csv')) ? 'csv'
-          : (contentType.toLowerCase().includes('excel') || contentType.toLowerCase().includes('xlsx')) ? 'excel'
-          : (contentType.toLowerCase().includes('parquet')) ? 'parquet'
+        const fileTypeKey = (filename.toLowerCase().includes('csv')) ? 'csv'
+          : (filename.toLowerCase().includes('excel') || filename.toLowerCase().includes('xlsx')) ? 'excel'
+          : (filename.toLowerCase().includes('parquet')) ? 'parquet'
           : null;
         if (fileTypeKey) {
           const update = {
@@ -158,17 +158,18 @@ router.post('/sign-url', async (req, res) => {
 
     // Update stats for user
     try {
+      console.log('[POST /api/s3/sign-url] Updating stats for user:', "68b36f80cb1d579c7f9f2e5a" || userid);
       const statsService = require('../services/statsService');
       const stats = await statsService.getStatsByUser("68b36f80cb1d579c7f9f2e5a" || userid);
-      const fileTypeKey = (contentType.toLowerCase().includes('csv')) ? 'csv'
-        : (contentType.toLowerCase().includes('excel') || contentType.toLowerCase().includes('xlsx')) ? 'excel'
-        : (contentType.toLowerCase().includes('parquet')) ? 'parquet'
+      const fileTypeKey = (filename.toLowerCase().includes('csv')) ? 'csv'
+        : (filename.toLowerCase().includes('excel') || filename.toLowerCase().includes('xlsx')) ? 'excel'
+        : (filename.toLowerCase().includes('parquet')) ? 'parquet'
         : null;
       if (fileTypeKey) {
         const update = {
           $inc: {
             [`fileTypeStats.${fileTypeKey}`]: 1,
-            [`fileSizeStats.${fileTypeKey}`]: fileSize / (1024 * 1024) // convert bytes to MB
+            [`fileSizeStats.${fileTypeKey}`]: fileSize / (1024) // convert bytes to MB
           }
         };
         if (stats) {
@@ -179,7 +180,7 @@ router.post('/sign-url', async (req, res) => {
           const newStats = {
             user: "68b36f80cb1d579c7f9f2e5a" || userid,
             fileTypeStats: { [fileTypeKey]: 1 },
-            fileSizeStats: { [fileTypeKey]: fileSize / (1024 * 1024) },// in MB
+            fileSizeStats: { [fileTypeKey]: fileSize / (1024) },// in MB
           };
           await statsService.createStats(newStats);
           console.log(`[POST /api/s3/sign-url] Stats created for user: ${"68b36f80cb1d579c7f9f2e5a" || userid}`);

@@ -59,15 +59,16 @@ const createCryptNotification = async ({ user, fileType, cryptForm, success, fil
     details = `Failed to ${cryptForm === 'encryption' ? 'encrypt' : 'decrypt'} ${fileName}.`;
     bg = 'bg-lvl2';
     priority = true;
+    bg = 'bg-lvl2';
+    priority = true;
   }
-  // Store timestamp and format as relative time
-  const now = new Date();
-  const time = getRelativeTime(now);
+  // Save time as ISO string for consistency
+  const time = new Date().toISOString();
   const notification = {
     user : "68b36f80cb1d579c7f9f2e5a" || user,
     title,
     details,
-    fileType,
+    fileType : fileName?.split('.').pop() || fileType,
     cryptForm,
     time,
     bg,

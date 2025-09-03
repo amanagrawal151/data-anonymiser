@@ -53,20 +53,22 @@ const Dashboard = () => {
     const fileSizes = stats.fileSizeStats || fallback.fileSizeStats;
     const fileStatus = stats.fileStatusStats || fallback.fileStatusStats;
 
-    const totalUploadedGB = fileSizes.csv + fileSizes.excel + fileSizes.parquet;
-    const totalProcessedGB = totalUploadedGB; // Adjust if you have a separate processed stat
-    const totalFailedGB = fileStatus.failure;
-    const totalSuccessGB = fileStatus.success;
+    // Convert GB to KB (1 GB = 1024 * 1024 KB)
+    const gbToKb = (gb) => gb;
+    const totalUploadedKB = gbToKb(fileSizes.csv) + gbToKb(fileSizes.excel) + gbToKb(fileSizes.parquet);
+    const totalProcessedKB = totalUploadedKB; // Adjust if you have a separate processed stat
+    const totalFailed = fileStatus.failure;
+    const totalSuccess = fileStatus.success;
     const totalFiles = fileCounts.csv + fileCounts.excel + fileCounts.parquet;
     const failedFiles = fileStatus.failure;
     const successFiles = fileStatus.success;
-
+    console.log("stats" , totalUploadedKB, totalProcessedKB, totalFailed, totalSuccess)
     const barData = {
-        labels: ["Uploaded (GB)", "Processed (GB)", "Failed (GB)", "Success (GB)"],
+        labels: ["Uploaded (KB)", "Processed (KB)", "Failed(KB)", "Success(KB)"],
         datasets: [
             {
-                label: "GBs",
-                data: [totalUploadedGB, totalProcessedGB, totalFailedGB, totalSuccessGB],
+                label: "KBs",
+                data: [totalUploadedKB, totalProcessedKB, totalFailed, totalSuccess],
                 backgroundColor: [
                     "#007bff",
                     "#28a745",

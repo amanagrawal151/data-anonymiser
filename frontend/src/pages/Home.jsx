@@ -11,38 +11,54 @@ const Home = (welcomeMessage) => {
   const [stepperFailed, setStepperFailed] = useState(null);
   const [uploadedFileName, setUploadedFileName] = useState("");
   const [initStatus, setInitStatus] = useState("Initiating");
-  const [uploadStatus, setUploadStatus] = useState("uploading");
+  const [uploadStatus, setUploadStatus] = useState(null); // 'uploading', 'uploaded', 'failed'
+  const [processingStatus, setProcessingStatus] = useState(null); // 'processing', 'processed', 'failed'
   const [uploadProgress, setUploadProgress] = useState(0);
   const [downloadUrl, setDownloadUrl] = useState(null);
 
   // Callback for FileUploader
   const handleUploadProgress = (status, progress, fileName) => {
-    setUploadStatus(status);
-    setUploadProgress(progress);
+    // status can be: uploading, uploaded, failed, processing, processed, failed-processing
     if (fileName) setUploadedFileName(fileName);
     if (status === 'uploading') {
+      setUploadStatus('uploading');
+      setProcessingStatus(null);
       setShowUploader(false);
       setShowStatus(true);
       setInitStatus("Initiated");
       setStepperStep(1);
       setStepperFailed(null);
     }
-    if(status === 'uploaded') {
+    if (status === 'uploaded') {
+      setUploadStatus('uploaded');
+      setProcessingStatus('processing');
       setStepperStep(2);
       setStepperFailed(null);
     }
-    if (status === 'ready') {
+    if (status === 'failed') {
+      setUploadStatus('failed');
+      setStepperStep(1);
+      setStepperFailed(1);
+    }
+    if (status === 'processing') {
+      setUploadStatus('uploaded');
+      setProcessingStatus('processing');
+      setStepperStep(3);
+      setStepperFailed(null);
+    }
+    if (status === 'processed') {
+      setProcessingStatus('processed');
+      setUploadStatus('uploaded')
       setStepperStep(4);
       setStepperFailed(null);
     }
-    if (status === 'failed-upload') {
-      setStepperStep(1);
-      setStepperFailed(1); // Mark uploading stage as failed
-    }
     if (status === 'failed-processing') {
-      setStepperStep(3);
-      setStepperFailed(3); // Mark processing stage as failed
+      setProcessingStatus('failed');
+      setUploadStatus('uploaded')
+      setStepperStep(2);
+      setStepperFailed(2);
     }
+    setUploadProgress(progress);
   };
 
   // Callback for FileUploader to set downloadUrl
@@ -54,7 +70,8 @@ const Home = (welcomeMessage) => {
   const handleCloseStatus = () => {
     setShowStatus(false);
     setShowUploader(true);
-    setUploadStatus("uploading");
+    setUploadStatus(null);
+    setProcessingStatus(null);
     setUploadProgress(0);
     setUploadedFileName("");
     setDownloadUrl(null);
@@ -84,7 +101,9 @@ const Home = (welcomeMessage) => {
           {showStatus && (
             <UploadStatus
               fileName={uploadedFileName}
+              fileSize={null}
               uploadStatus={uploadStatus}
+              processingStatus={processingStatus}
               progress={uploadProgress}
               downloadUrl={downloadUrl}
               onClose={handleCloseStatus}
@@ -93,8 +112,8 @@ const Home = (welcomeMessage) => {
           <Stepper
             steps={[
               { label: initStatus },
-              { label: uploadStatus === 'ready' ? 'uploaded' : uploadStatus },
-              { label: uploadStatus === 'ready' ? 'Processed' : 'Processing' },
+              { label: uploadStatus === 'uploaded' ? 'Uploaded' : uploadStatus === 'failed' ? 'Upload Failed' : 'Uploading' },
+              { label: processingStatus === 'processed' ? 'Processed' : processingStatus === 'failed' ? 'Processing Failed' : 'Processing' },
               { label: 'Ready to download' },
             ]}
             current={stepperStep}

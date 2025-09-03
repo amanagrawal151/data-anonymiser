@@ -1,7 +1,213 @@
 const express = require('express');
-const cryptService = require('../services/cryptService');
 const router = express.Router();
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const upload = multer({ dest: path.join(__dirname, '../tmp') });
 
+const cryptService = require('../services/cryptService');
+
+/**
+ * @swagger
+ * /api/crypt/encrypt-file-upload:
+ *   post:
+ *     summary: Encrypt an uploaded file and return the encrypted file for download
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The file to encrypt
+ *     responses:
+ *       200:
+ *         description: Encrypted file for download
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: No file uploaded
+ *       500:
+ *         description: Server error
+ */
+router.post('/encrypt-file-upload', upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const result = await cryptService.encryptFile(file.path);
+
+    // Use original extension for download
+    const originalExt = path.extname(file.originalname);
+       const downloadName = file.originalname.replace(originalExt, '') + '_encrypted' + originalExt;;
+    res.download(result.encryptedFilePath, downloadName, err => {
+      fs.unlink(file.path, () => {});
+      fs.unlink(result.encryptedFilePath, () => {});
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/crypt/decrypt-file-upload:
+ *   post:
+ *     summary: Decrypt an uploaded file and return the decrypted file for download
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The file to decrypt
+ *     responses:
+ *       200:
+ *         description: Decrypted file for download
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: No file uploaded
+ *       500:
+ *         description: Server error
+ */
+router.post('/decrypt-file-upload', upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const result = await cryptService.decryptFile(file.path);
+
+    // Use original extension for download
+    const originalExt = path.extname(file.originalname);
+    const downloadName = file.originalname.replace(originalExt, '') + '_decrypted' + originalExt;
+    res.download(result.decryptedFilePath, downloadName, err => {
+      fs.unlink(file.path, () => {});
+      fs.unlink(result.decryptedFilePath, () => {});
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/crypt/file-encryption:
+ *   post:
+ *     summary: Encrypt a local file using the cryptService
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               filepath:
+ *                 type: string
+ *                 description: Absolute path to the file to encrypt
+ *     responses:
+ *       200:
+ *         description: Encryption result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 colResult:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 encryptedFilePath:
+ *                   type: string
+ *       400:
+ *         description: Filepath is required or file does not exist
+ *       500:
+ *         description: Server error
+ */
+router.post('/file-encryption', async (req, res) => {
+  const { filepath } = req.body;
+  if (!filepath || typeof filepath !== 'string') {
+    return res.status(400).json({ error: 'filepath is required and must be a string' });
+  }
+  if (!fs.existsSync(filepath)) {
+    return res.status(400).json({ error: 'File does not exist at the provided path' });
+  }
+  try {
+    const result = await cryptService.encryptFile(filepath);
+    res.json(result);
+  } catch (err) {
+    console.error('[POST /api/crypt/file-encryption] Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/crypt/file-decryption:
+ *   post:
+ *     summary: Decrypt a local file using the cryptService
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               filepath:
+ *                 type: string
+ *                 description: Absolute path to the file to decrypt
+ *     responses:
+ *       200:
+ *         description: Decryption result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 decryptedColumns:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 decryptedFilePath:
+ *                   type: string
+ *       400:
+ *         description: Filepath is required or file does not exist
+ *       500:
+ *         description: Server error
+ */
+router.post('/file-decryption', async (req, res) => {
+  const { filepath } = req.body;
+  if (!filepath || typeof filepath !== 'string') {
+    return res.status(400).json({ error: 'filepath is required and must be a string' });
+  }
+  if (!fs.existsSync(filepath)) {
+    return res.status(400).json({ error: 'File does not exist at the provided path' });
+  }
+  try {
+    const result = await cryptService.decryptFile(filepath);
+    res.json(result);
+  } catch (err) {
+    console.error('[POST /api/crypt/file-decryption] Error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
 
 /**
  * @swagger
@@ -51,17 +257,23 @@ router.post('/encrypt-file', async (req, res) => {
     const { getFileBufferFromS3, uploadFileToS3, getSignedDownloadUrl } = require('../services/s3Service');
     // Download file from S3
     const buffer = await getFileBufferFromS3(bucket, key);
-    // (Optional) Encrypt buffer here if needed
-    // Upload buffer back to S3 (to a new key, e.g., processed/)
-    const processedKey = `processed/${Date.now()}_${fileName}`;
-    await uploadFileToS3(buffer, processedKey, fileType, bucket);
+    // Save buffer to a temp file
+    const tempFilePath = path.join(__dirname, '..', 'tmp', `${Date.now()}_${fileName}`);
+    fs.writeFileSync(tempFilePath, buffer);
+    // Encrypt the file
+    const { encryptedFilePath } = await cryptService.encryptFile(tempFilePath);
+    // Read encrypted file buffer
+    const encryptedBuffer = fs.readFileSync(encryptedFilePath);
+    // Upload encrypted buffer back to S3 (to a new key, e.g., processed/)
+    const processedKey = `processed/${Date.now()}_${path.basename(encryptedFilePath)}`;
+    await uploadFileToS3(encryptedBuffer, processedKey, fileType, bucket);
     // Update the file's key in the DB
     await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
     // Update stats for success file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'success');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'success');
     // Create notification for success
     await notificationService.createCryptNotification({
-      user: userId,
+      user:  "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'encryption',
       success: true,
@@ -79,10 +291,10 @@ router.post('/encrypt-file', async (req, res) => {
       console.error('[POST /api/crypt/encrypt-file] DB update error:', dbErr);
     }
     // Update stats for failed file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'failure');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'failure');
     // Create notification for failure
     await notificationService.createCryptNotification({
-      user: userId,
+      user: "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'encryption',
       success: false,
@@ -140,17 +352,23 @@ router.post('/decrypt-file', async (req, res) => {
     const { getFileBufferFromS3, uploadFileToS3, getSignedDownloadUrl } = require('../services/s3Service');
     // Download file from S3
     const buffer = await getFileBufferFromS3(bucket, key);
-    // (Optional) Decrypt buffer here if needed
-    // Upload buffer back to S3 (to a new key, e.g., processed/)
-    const processedKey = `processed/${Date.now()}_${fileName}`;
-    await uploadFileToS3(buffer, processedKey, fileType, bucket);
+    // Save buffer to a temp file
+    const tempFilePath = path.join(__dirname, '..', 'tmp', `${Date.now()}_${fileName}`);
+    fs.writeFileSync(tempFilePath, buffer);
+    // Decrypt the file
+    const { decryptedFilePath } = await cryptService.decryptFile(tempFilePath);
+    // Read decrypted file buffer
+    const decryptedBuffer = fs.readFileSync(decryptedFilePath);
+    // Upload decrypted buffer back to S3 (to a new key, e.g., processed/)
+    const processedKey = `processed/${Date.now()}_${path.basename(decryptedFilePath)}`;
+    await uploadFileToS3(decryptedBuffer, processedKey, fileType, bucket);
     // Update the file's key in the DB
     await File.findOneAndUpdate({ key }, { key: processedKey, stage: 'success', processingTimestamp: new Date() });
     // Update stats for success file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'success');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'success');
     // Create notification for success
     await notificationService.createCryptNotification({
-      user: userId,
+      user: "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'decryption',
       success: true,
@@ -168,10 +386,10 @@ router.post('/decrypt-file', async (req, res) => {
       console.error('[POST /api/crypt/decrypt-file] DB update error:', dbErr);
     }
     // Update stats for failed file
-    await statsService.updateStatsForFileOutcome(userId, fileType, 'failure');
+    await statsService.updateStatsForFileOutcome(userId, fileName, 'failure');
     // Create notification for failure
     await notificationService.createCryptNotification({
-      user: userId,
+      user: "68b36f80cb1d579c7f9f2e5a" || userId,
       fileType,
       cryptForm: 'decryption',
       success: false,

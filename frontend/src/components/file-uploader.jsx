@@ -8,6 +8,7 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
   const [dragActive, setDragActive] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadStatus, setUploadStatus] = useState(null); // 'uploading', 'uploaded', 'failed'
+  const [processingStatus, setProcessingStatus] = useState(null); // 'processing', 'processed', 'failed'
   const [downloadUrl, setDownloadUrl] = useState(null);
 
 
@@ -18,8 +19,8 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
 
   const uploadAndCrypt = async (action) => {
     if (!selectedFile) return;
-    console.log(`[FileUploader] Starting ${action} & upload for:`, selectedFile.name);
     setUploadStatus('uploading');
+    setProcessingStatus(null);
     setUploadProgress(0);
     setDownloadUrl(null);
     if (onProgress) onProgress('uploading', 0, selectedFile.name);
@@ -38,8 +39,8 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       });
       if (!res.ok) {
         console.error('[FileUploader] Failed to get upload URL:', res.status, await res.text());
-        setUploadStatus('failed-upload');
-        if (onProgress) onProgress('failed-upload', 0, selectedFile.name);
+        setUploadStatus('failed');
+        if (onProgress) onProgress('failed', 0, selectedFile.name);
         alert('Failed to get upload URL');
         return;
       }
@@ -62,27 +63,28 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
           if (xhr.status >= 200 && xhr.status < 300) {
             console.log('[FileUploader] File uploaded to S3 successfully.');
             setUploadProgress(100);
+            setUploadStatus('uploaded');
             if (onProgress) onProgress('uploaded', 100, selectedFile.name);
             resolve();
           } else {
             console.error('[FileUploader] S3 upload failed:', xhr.status, xhr.statusText);
-            setUploadStatus('failed-upload');
-            if (onProgress) onProgress('failed-upload', uploadProgress, selectedFile.name);
+            setUploadStatus('failed');
+            if (onProgress) onProgress('failed', uploadProgress, selectedFile.name);
             alert('Failed to upload file to S3');
             reject();
           }
         };
         xhr.onerror = () => {
           console.error('[FileUploader] S3 upload error:', xhr.status, xhr.statusText);
-          setUploadStatus('failed-upload');
-          if (onProgress) onProgress('failed-upload', uploadProgress, selectedFile.name);
+          setUploadStatus('failed');
+          if (onProgress) onProgress('failed', uploadProgress, selectedFile.name);
           alert('Failed to upload file to S3');
           reject();
         };
         xhr.send(selectedFile);
       });
       // 3. Call crypt API
-      setUploadStatus('processing');
+      setProcessingStatus('processing');
       console.log(`[FileUploader] Calling crypt API (${action}) for key:`, key);
       let cryptRes;
       if (action === 'encrypt') {
@@ -100,7 +102,7 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       }
       if (!cryptRes.ok) {
         console.error('[FileUploader] Crypt API failed:', cryptRes.status, await cryptRes.text());
-        setUploadStatus('failed-processing');
+        setProcessingStatus('failed-processing');
         if (onProgress) onProgress('failed-processing', 100, selectedFile.name);
         alert('Failed to process file');
         return;
@@ -111,13 +113,13 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       if (typeof setDownloadUrlProp === 'function') {
         setDownloadUrlProp(downloadUrlFromApi);
       }
-      setUploadStatus('ready'); // Set status to 'ready' for ready-to-download state
-      if (onProgress) onProgress('ready', 100, selectedFile.name);
+      setProcessingStatus('processed');
+      if (onProgress) onProgress('processed', 100, selectedFile.name);
       if (onUpload) onUpload(selectedFile.name);
       console.log('[FileUploader] File processing complete. Ready to download.');
     } catch (err) {
       console.error('[FileUploader] Unexpected error during upload or processing:', err);
-      setUploadStatus('failed-processing');
+      setProcessingStatus('failed');
       if (onProgress) onProgress('failed-processing', 0, selectedFile.name);
       alert('An unexpected error occurred during upload or processing.');
     }
@@ -151,15 +153,17 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
 
   return (
     <div style={{ width: "600px" }}>
-      {uploadStatus ? (
+      {uploadStatus || processingStatus ? (
         <UploadStatus
           fileName={selectedFile?.name}
           fileSize={selectedFile?.size}
           uploadStatus={uploadStatus}
+          processingStatus={processingStatus}
           progress={uploadProgress}
           downloadUrl={downloadUrl}
           onClose={() => {
             setUploadStatus(null);
+            setProcessingStatus(null);
             setSelectedFile(null);
             setUploadProgress(0);
             setDownloadUrl(null);
@@ -204,7 +208,7 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
             disabled={!selectedFile}
             onClick={() => uploadAndCrypt('encrypt')}
           >
-            Encrypt & Upload
+             Upload & Encrypt 
           </button>
           <button
             type="button"
@@ -212,7 +216,7 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
             disabled={!selectedFile}
             onClick={() => uploadAndCrypt('decrypt')}
           >
-            Decrypt & Upload
+             Upload & Decrypt 
           </button>
           <div className="file-input-corners"></div>
         </div>
