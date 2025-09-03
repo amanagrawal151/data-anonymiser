@@ -21,7 +21,7 @@
     "jade": "~1.11.0",
     "mongoose": "^8.15.1",
     "morgan": "~1.9.1",
-    "multer": "^2.0.1",
+    "multer": "^2.0.2",
     "nodemon": "^3.1.10",
     "parquets": "^0.10.10",
     "swagger-jsdoc": "^6.2.8",

@@ -1,9 +1,109 @@
 const express = require('express');
-const cryptService = require('../services/cryptService');
 const router = express.Router();
+const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const upload = multer({ dest: path.join(__dirname, '../tmp') });
 
+const cryptService = require('../services/cryptService');
+
+/**
+ * @swagger
+ * /api/crypt/encrypt-file-upload:
+ *   post:
+ *     summary: Encrypt an uploaded file and return the encrypted file for download
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The file to encrypt
+ *     responses:
+ *       200:
+ *         description: Encrypted file for download
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: No file uploaded
+ *       500:
+ *         description: Server error
+ */
+router.post('/encrypt-file-upload', upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const result = await cryptService.encryptFile(file.path);
+
+    // Use original extension for download
+    const originalExt = path.extname(file.originalname);
+       const downloadName = file.originalname.replace(originalExt, '') + '_encrypted' + originalExt;;
+    res.download(result.encryptedFilePath, downloadName, err => {
+      fs.unlink(file.path, () => {});
+      fs.unlink(result.encryptedFilePath, () => {});
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * @swagger
+ * /api/crypt/decrypt-file-upload:
+ *   post:
+ *     summary: Decrypt an uploaded file and return the decrypted file for download
+ *     tags: [Crypt]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: The file to decrypt
+ *     responses:
+ *       200:
+ *         description: Decrypted file for download
+ *         content:
+ *           application/octet-stream:
+ *             schema:
+ *               type: string
+ *               format: binary
+ *       400:
+ *         description: No file uploaded
+ *       500:
+ *         description: Server error
+ */
+router.post('/decrypt-file-upload', upload.single('file'), async (req, res) => {
+  try {
+    const file = req.file;
+    if (!file) return res.status(400).json({ error: 'No file uploaded' });
+
+    const result = await cryptService.decryptFile(file.path);
+
+    // Use original extension for download
+    const originalExt = path.extname(file.originalname);
+    const downloadName = file.originalname.replace(originalExt, '') + '_decrypted' + originalExt;
+    res.download(result.decryptedFilePath, downloadName, err => {
+      fs.unlink(file.path, () => {});
+      fs.unlink(result.decryptedFilePath, () => {});
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 /**
  * @swagger
