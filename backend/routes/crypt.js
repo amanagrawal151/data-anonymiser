@@ -247,7 +247,7 @@ router.post('/file-decryption', async (req, res) => {
  *         description: Server error
  */
 router.post('/encrypt-file', async (req, res) => {
-  const { key, fileName, fileType, userId } = req.body;
+  const { key, fileName, fileType, userId ,  columns} = req.body;
   if (!key || !fileName || !fileType) return res.status(400).json({ error: 'key, fileName, and fileType are required' });
   const File = require('../models/File');
   const statsService = require('../services/statsService');
@@ -261,7 +261,7 @@ router.post('/encrypt-file', async (req, res) => {
     const tempFilePath = path.join(__dirname, '..', 'tmp', `${Date.now()}_${fileName}`);
     fs.writeFileSync(tempFilePath, buffer);
     // Encrypt the file
-    const { encryptedFilePath } = await cryptService.encryptFile(tempFilePath);
+    const { encryptedFilePath } = await cryptService.encryptFile(tempFilePath , columns);
     // Read encrypted file buffer
     const encryptedBuffer = fs.readFileSync(encryptedFilePath);
     // Upload encrypted buffer back to S3 (to a new key, e.g., processed/)
