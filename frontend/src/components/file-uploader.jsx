@@ -10,11 +10,21 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
   const [uploadStatus, setUploadStatus] = useState(null); // 'uploading', 'uploaded', 'failed'
   const [processingStatus, setProcessingStatus] = useState(null); // 'processing', 'processed', 'failed'
   const [downloadUrl, setDownloadUrl] = useState(null);
+  const [columns, setColumns] = useState(""); // New state for columns
+  const [showColumnsInput, setShowColumnsInput] = useState(false); // New state to control columns input visibility
 
 
   const handleFileChange = (e) => {
     console.log('[FileUploader] File selected:', e.target.files[0]?.name, e.target.files[0]);
     setSelectedFile(e.target.files[0]);
+  };
+
+  // Helper to parse columns string to array
+  const parseColumns = (str) => {
+    return str
+      .split(',')
+      .map(s => s.trim().replace(/^"|"$/g, ''))
+      .filter(Boolean);
   };
 
   const uploadAndCrypt = async (action) => {
@@ -87,17 +97,18 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
       setProcessingStatus('processing');
       console.log(`[FileUploader] Calling crypt API (${action}) for key:`, key);
       let cryptRes;
+      const columnsArray = parseColumns(columns);
       if (action === 'encrypt') {
         cryptRes = await fetch('http://localhost:3000/api/crypt/encrypt-file', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, fileName: selectedFile.name, fileType: selectedFile.type || 'application/octet-stream' })
+          body: JSON.stringify({ key, fileName: selectedFile.name, fileType: selectedFile.type || 'application/octet-stream', columns: columnsArray })
         });
       } else {
         cryptRes = await fetch('http://localhost:3000/api/crypt/decrypt-file', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, fileName: selectedFile.name, fileType: selectedFile.type || 'application/octet-stream' })
+          body: JSON.stringify({ key, fileName: selectedFile.name, fileType: selectedFile.type || 'application/octet-stream', columns: columnsArray })
         });
       }
       if (!cryptRes.ok) {
@@ -218,6 +229,33 @@ const FileUploader = ({ onUpload, onProgress, setDownloadUrl: setDownloadUrlProp
           >
              Upload & Decrypt 
           </button>
+          {/* Checkbox to show/hide columns input */}
+          <div className="form-group mb-3 d-flex flex-column align-items-center justify-content-center">
+            <div className="form-check form-check-sm mt-3">
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="chkbx"
+                checked={showColumnsInput}
+                onChange={e => setShowColumnsInput(e.target.checked)}
+              />
+              <label className="form-check-label btn-secondary" htmlFor="chkbx">
+                Add custom column names to encrypt
+              </label>
+            </div>
+            {showColumnsInput && (
+              <div className="mt-3 w-100 d-flex flex-column align-items-center">
+                <textarea
+                  id="columnsInput"
+                  className="form-control form-control-lg text-center"
+                  style={{ maxWidth: '400px' }}
+                  placeholder='"column1","column2","column3"...'
+                  value={columns}
+                  onChange={e => setColumns(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
           <div className="file-input-corners"></div>
         </div>
       )}
