@@ -58,7 +58,7 @@ const Dashboard = () => {
     const totalUploadedKB = gbToKb(fileSizes.csv) + gbToKb(fileSizes.excel) + gbToKb(fileSizes.parquet);
     const totalProcessedKB = totalUploadedKB; // Adjust if you have a separate processed stat
     const totalFailed = fileStatus.failure;
-    const totalSuccess = fileStatus.success;
+    const totalSuccess = totalProcessedKB;
     const totalFiles = fileCounts.csv + fileCounts.excel + fileCounts.parquet;
     const failedFiles = fileStatus.failure;
     const successFiles = fileStatus.success;
@@ -108,7 +108,7 @@ const Dashboard = () => {
                 <div className="row g-4 justify-content-center">
                     <div className="col-12 col-md-6 col-lg-4">
                         <div className="card shadow p-3">
-                            <h5 className="text-center mb-3">GBs Uploaded/Processed</h5>
+                            <h5 className="text-center mb-3">KBs Uploaded/Processed</h5>
                             <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
                         </div>
                     </div>
