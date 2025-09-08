@@ -19,7 +19,7 @@ const decrypt = (encrypted) => {
   return cryptr.decrypt(encrypted);
 };
 
-const encryptFile = async (filePath) => {
+const encryptFile = async (filePath, columns = []) => {
   const ext = path.extname(filePath).toLowerCase();
   const conversionPath = await convertToCSV(filePath);
 
@@ -30,75 +30,100 @@ const encryptFile = async (filePath) => {
   const header = records[0];
   const dataRows = records.slice(1, 11);
 
-  // Build column-wise key-value pairs with Excel-style keys
-  const columnData = {};
-  header.forEach((_, colIdx) => {
-    const colName = getExcelColumnName(colIdx);
-    columnData[colName] = dataRows.map((row) => row[colIdx]);
-  });
+  let colResult = [];
 
-  // Send to FastAPI endpoint
-  const payload = columnData;
-  try {
-    const response = await axios.post(
-      "http://localhost:8000/detect-pii",
-      payload,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-    // Process the response to get columns with count >= 9
-    const colResult = [];
-    const data = response.data;
-    for (const [col, arr] of Object.entries(data)) {
-      if (Array.isArray(arr) && arr.length === 2 && arr[1].count >= 9) {
-        colResult.push(col);
-      }
-    }
+  if (Array.isArray(columns) && columns.length > 0) {
+    // Encrypt only columns specified in the columns array
+    columns.forEach((colHeader) => {
+      const colIdx = header.indexOf(colHeader);
+      if (colIdx !== -1) {
+        colResult.push(getExcelColumnName(colIdx));
+        // Encrypt the header text
+        const encryptedHeaderMarker = encrypt(SECRET_KEY);
+        header[colIdx] = `${encryptedHeaderMarker}:${encrypt(header[colIdx])}`;
 
-    // Encrypt values in columns listed in colResult (except header)
-    colResult.forEach((colName) => {
-      const colIdx = header.findIndex(
-        (_, idx) => getExcelColumnName(idx) === colName
-      );
-      if (colIdx === -1) return;
+        // Encrypt the SECRET_KEY for this column
+        const encryptedSecretKey = encrypt(SECRET_KEY);
 
-      // Encrypt the header text
-      const encryptedHeaderMarker = encrypt(SECRET_KEY);
-      header[colIdx] = `${encryptedHeaderMarker}:${encrypt(header[colIdx])}`;
-
-      // Encrypt the SECRET_KEY for this column
-      const encryptedSecretKey = encrypt(SECRET_KEY);
-
-      // Encrypt each value in that column for all data rows and prefix with encryptedSecretKey
-      for (let i = 1; i < records.length; i++) {
-        if (records[i][colIdx]) {
-          const encryptedValue = encrypt(records[i][colIdx]);
-          records[i][colIdx] = `${encryptedSecretKey}:${encryptedValue}`;
+        // Encrypt each value in that column for all data rows and prefix with encryptedSecretKey
+        for (let i = 1; i < records.length; i++) {
+          if (records[i][colIdx]) {
+            const encryptedValue = encrypt(records[i][colIdx]);
+            records[i][colIdx] = `${encryptedSecretKey}:${encryptedValue}`;
+          }
         }
       }
     });
+  } else {
+    // Build column-wise key-value pairs with Excel-style keys
+    const columnData = {};
+    header.forEach((_, colIdx) => {
+      const colName = getExcelColumnName(colIdx);
+      columnData[colName] = dataRows.map((row) => row[colIdx]);
+    });
 
-    // write the modified records back to a new CSV file
-    const newCsvContent = [
-      header.join(","),
-      ...records.slice(1).map((row) => row.join(",")),
-    ].join("\n");
-    const encryptedCsvPath = conversionPath.replace(
-      /\.csv$/i,
-      "_encrypted.csv"
-    );
-    fs.writeFileSync(encryptedCsvPath, newCsvContent, "utf8");
+    // Send to FastAPI endpoint
+    const payload = columnData;
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/detect-pii",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      // Process the response to get columns with count >= 9
+      const data = response.data;
+      for (const [col, arr] of Object.entries(data)) {
+        if (Array.isArray(arr) && arr.length === 2 && arr[1].count >= 9) {
+          colResult.push(col);
+        }
+      }
 
-    const finalEncryptedPath = await convertFromCSV(encryptedCsvPath, ext);
+      // Encrypt values in columns listed in colResult (except header)
+      colResult.forEach((colName) => {
+        const colIdx = header.findIndex(
+          (_, idx) => getExcelColumnName(idx) === colName
+        );
+        if (colIdx === -1) return;
 
-    return {
-      colResult,
-      encryptedFilePath: finalEncryptedPath,
-    };
-  } catch (err) {
-    throw new Error("Error calling /detect-pii: " + err.message);
+        // Encrypt the header text
+        const encryptedHeaderMarker = encrypt(SECRET_KEY);
+        header[colIdx] = `${encryptedHeaderMarker}:${encrypt(header[colIdx])}`;
+
+        // Encrypt the SECRET_KEY for this column
+        const encryptedSecretKey = encrypt(SECRET_KEY);
+
+        // Encrypt each value in that column for all data rows and prefix with encryptedSecretKey
+        for (let i = 1; i < records.length; i++) {
+          if (records[i][colIdx]) {
+            const encryptedValue = encrypt(records[i][colIdx]);
+            records[i][colIdx] = `${encryptedSecretKey}:${encryptedValue}`;
+          }
+        }
+      });
+    } catch (err) {
+      throw new Error("Error calling /detect-pii: " + err.message);
+    }
   }
+
+  // write the modified records back to a new CSV file
+  const newCsvContent = [
+    header.join(","),
+    ...records.slice(1).map((row) => row.join(",")),
+  ].join("\n");
+  const encryptedCsvPath = conversionPath.replace(
+    /\.csv$/i,
+    "_encrypted.csv"
+  );
+  fs.writeFileSync(encryptedCsvPath, newCsvContent, "utf8");
+
+  const finalEncryptedPath = await convertFromCSV(encryptedCsvPath, ext);
+
+  return {
+    colResult,
+    encryptedFilePath: finalEncryptedPath,
+  };
 };
 
 const convertToCSV = async (filePath) => {

@@ -2,7 +2,9 @@ const { encryptFile, decryptFile, convertToCSV, convertFromCSV } = require('./se
 
 (async () => {
   try {
-    const result = await encryptFile('C:\\Users\\vsharma061324\\Desktop\\projects\\data-anonymiser\\backend\\tmp\\sample-data.parquet');
+    const filePath = 'C:\\Users\\vsharma061324\\OneDrive - GROUP DIGITAL WORKPLACE\\Desktop\\projects\\data-anonymiser\\backend\\tmp\\sample-data.parquet';
+    const columns = ["birthdate", "gender"];
+    const result = await encryptFile(filePath, columns);
     console.log(result);
   } catch (err) {
     console.error('Error:', err.message);
