@@ -25,7 +25,7 @@ A full-stack, privacy-first data anonymization platform with secure file uploads
 
 ## 🏗️ Tech Stack
 
-- **Backend**: Node.js, Express.js, MongoDB (Mongoose), AWS S3, Swagger
+- **Backend**: Node.js, Express.js, MongoDB (Mongoose), AWS S3, Swagger, Fast API
 - **Frontend**: React, Zustand, Bootstrap, Chart.js
 - **Other**: Multer, AWS SDK, bcrypt, digital signatures
 
