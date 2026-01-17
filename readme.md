@@ -1,6 +1,6 @@
 # 🚀 Data Anonymizer
 
-A full-stack, privacy-first data anonymization platform for secure file uploads, encryption, and analytics. Built with Express.js, MongoDB, S3, React, Zustand, and Bootstrap.
+A full-stack, privacy-first data anonymization platform with secure file uploads, encryption-decryption, and analytics. Built with Express.js, MongoDB, S3, React, Zustand, and Bootstrap.
 
 ---
 
