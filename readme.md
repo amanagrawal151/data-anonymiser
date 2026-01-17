@@ -4,7 +4,7 @@ A full-stack, privacy-first data anonymization platform for secure file uploads,
 
 ---
 
-## 🌟 NPM Package
+## 📦 NPM Package
 - https://www.npmjs.com/package/@sgbots/data-anonymiser
 
 ---
