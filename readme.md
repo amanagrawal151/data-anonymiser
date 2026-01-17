@@ -4,6 +4,11 @@ A full-stack, privacy-first data anonymization platform for secure file uploads,
 
 ---
 
+## 🌟 NPM Package
+- https://www.npmjs.com/package/@sgbots/data-anonymiser
+
+---
+
 ## 🌟 Features
 
 - **Secure File Uploads**: Upload files directly to S3 using pre-signed URLs. All uploads are tracked and encrypted.
