@@ -11,6 +11,7 @@ A full-stack, privacy-first data anonymization platform for secure file uploads,
 
 ## 🌟 Features
 
+- **Detects and encrypts/decrypts Personally Identifiable Information (PII) in .parquet, .csv, .xlsx, and .xlsm files.**
 - **Secure File Uploads**: Upload files directly to S3 using pre-signed URLs. All uploads are tracked and encrypted.
 - **User Management**: Per-user file and stats tracking, with authentication and personalized dashboard.
 - **Data Anonymization & Encryption**: Strong cryptography (bcrypt, digital signatures, public/private keys) for file protection.
