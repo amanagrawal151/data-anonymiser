@@ -69,7 +69,7 @@ router.get('/', async (req, res) => {
   console.log('[GET /api/files]');
   try {
     const files = await fileService.getAllFiles();
-    res.json(files);
+    res.json(files.reverse());
   } catch (err) {
     console.error('[GET /api/files] Error:', err);
     res.status(500).json({ error: err.message });

@@ -1,14 +1,21 @@
 # 🚀 Data Anonymizer
 
-A full-stack, privacy-first data anonymization platform for secure file uploads, encryption, and analytics. Built with Express.js, MongoDB, S3, React, Zustand, and Bootstrap.
+A full-stack, privacy-first data anonymization platform with secure file uploads, encryption-decryption, and analytics. Built with Express.js, MongoDB, S3, React, Zustand, and Bootstrap.
+
+---
+
+## 📦 NPM Package
+- https://www.npmjs.com/package/@sgbots/data-anonymiser
 
 ---
 
 ## 🌟 Features
 
+- **Detects and encrypts/decrypts Personally Identifiable Information (PII) in .parquet, .csv, .xlsx, and .xlsm files.**
+- **PII Detection**: Custom deep learning model trained on a supervised dataset (labeled with Microsoft Presidio) to detect Personally Identifiable Information (PII) in files. Uses DistilBERT tokenizer for efficient text processing.
+- **Data Anonymization & Encryption**: Strong cryptography, two way hashing (crypt, digital signatures, public/private keys) for file protection.
 - **Secure File Uploads**: Upload files directly to S3 using pre-signed URLs. All uploads are tracked and encrypted.
 - **User Management**: Per-user file and stats tracking, with authentication and personalized dashboard.
-- **Data Anonymization & Encryption**: Strong cryptography (bcrypt, digital signatures, public/private keys) for file protection.
 - **Real-Time Notifications**: Stay updated on upload status, anonymization results, and system alerts.
 - **Dashboard & Analytics**: Visualize your uploads, anonymization actions, and stats. Filter, search, and manage files easily.
 - **Swagger API Docs**: Explore and test all backend endpoints with built-in Swagger UI.
@@ -19,9 +26,10 @@ A full-stack, privacy-first data anonymization platform for secure file uploads,
 
 ## 🏗️ Tech Stack
 
-- **Backend**: Node.js, Express.js, MongoDB (Mongoose), AWS S3, Swagger
+- **Backend**: Node.js, Express.js, MongoDB (Mongoose), AWS S3, Swagger, Fast API
 - **Frontend**: React, Zustand, Bootstrap, Chart.js
-- **Other**: Multer, AWS SDK, bcrypt, digital signatures
+- **DL Model**: Presidio, Distilbert tokenizer
+- **Other**: Multer, AWS SDK, crypt, digital signatures
 
 ---
 

@@ -59,7 +59,7 @@ const TableContent = ({ search, fileType, fileStatus, startDate, endDate }) => {
     // End date
     if (endDate && row.date > endDate) return false;
     return true;
-  }).reverse();
+  });
 
   // Pagination logic
   const totalPages = Math.ceil(filtered.length / pageSize);

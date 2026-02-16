@@ -26,6 +26,11 @@ app.set('view engine', 'jade');
 const connectDB = require('./models/db');
 connectDB();
 
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-store');
+  next();
+});
+// ...existing routes...
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

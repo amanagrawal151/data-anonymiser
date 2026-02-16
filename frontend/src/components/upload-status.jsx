@@ -1,4 +1,4 @@
-const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose, downloadUrl }) => {
+const UploadStatus = ({ fileName, uploadStatus, processingStatus, fileSize, progress = 0, onClose, downloadUrl }) => {
   // Helper to format file size
   const formatSize = (size) => {
     if (!size) return '';
@@ -7,33 +7,39 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
     return (size / (1024 * 1024)).toFixed(2) + ' MB';
   };
 
-  if (uploadStatus === 'uploaded') {
+  // Uploading
+  if (uploadStatus === 'uploading') {
     return (
       <div style={{ width: "600px" }}>
-        <div className="file-upload file-upload-md">
-          <div className="file-upload-icon">
+        <div className="file-uploading file-upload-md">
+          <div className="file-uploading-icon">
             <svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fillRule="evenodd" clipRule="evenodd" d="M0 0H23L38 15V48H0V0ZM10 27.5L11.5 26L16 30.5L26.5 20L28 21.5L16 33.5L10 27.5Z" fill="black" stroke="currentColor"></path>
+              <path d="M11 22L12.41 23.41L18 17.83V30H20V17.83L25.58 23.42L27 22L19 14L11 22Z" fill="currentColor"></path>
+              <path d="M18 32H20V34H18V32Z" fill="black"></path>
+              <path d="M18 36H20V38H18V36Z" fill="black"></path>
+              <path fillRule="evenodd" clipRule="evenodd" d="M22.1716 2H2V46H36V15.8284L22.1716 2ZM23 0H0V48H38V15L23 0Z" fill="currentColor"></path>
             </svg>
           </div>
-          <div className="file-upload-text">
-            <div className="file-upload-text-content d-flex justify-content-between">
-              <span className="file-upload-title">{fileName}</span><br />
-              <span className="file-upload-size">{formatSize(fileSize)}</span>
+          <div className="file-uploading-text">
+            <div className="file-uploading-text-content d-flex justify-content-between">
+              <span className="file-uploading-title">{fileName || "Uploading file..."}</span><br />
+              <span className="file-uploading-size">{progress}%</span>
+            </div>
+            <div className="file-uploading-progress bg-black bg-opacity-10">
+              <div className="h-100 bg-black" style={{ width: `${progress}%` }}></div>
             </div>
           </div>
-          <div className="d-flex gap-2 mt-3">
-            <span className="text-info align-self-center">File uploaded. Processing...</span>
-            <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
-              <em className="icon">close</em>
-            </button>
-          </div>
+          <span className="text-info align-self-center">Uploading...</span>
+          <button className="file-uploading-button btn btn-lg btn-flat-light" onClick={onClose}>
+            <em className="icon">close</em>
+          </button>
         </div>
       </div>
     );
   }
 
-  if (uploadStatus === 'failed-upload') {
+  // Upload failed
+  if (uploadStatus === 'failed') {
     return (
       <div style={{ width: "600px" }}>
         <div className="file-upload-error file-upload-md">
@@ -56,7 +62,36 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
       </div>
     );
   }
-  if (uploadStatus === 'failed-processing') {
+
+  // Uploaded, now processing
+  if (uploadStatus === 'uploaded' && processingStatus === 'processing') {
+    return (
+      <div style={{ width: "600px" }}>
+        <div className="file-upload file-upload-md">
+          <div className="file-upload-icon">
+            <svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fillRule="evenodd" clipRule="evenodd" d="M0 0H23L38 15V48H0V0ZM10 27.5L11.5 26L16 30.5L26.5 20L28 21.5L16 33.5L10 27.5Z" fill="black" stroke="currentColor"></path>
+            </svg>
+          </div>
+          <div className="file-upload-text">
+            <div className="file-upload-text-content d-flex justify-content-between">
+              <span className="file-upload-title">{fileName}</span><br />
+              <span className="file-upload-size">{formatSize(fileSize)}</span>
+            </div>
+          </div>
+          <div className="d-flex gap-2 mt-3">
+            <span className="text-info align-self-center">Upload successful. Processing...</span>
+            <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
+              <em className="icon">close</em>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Processing failed
+  if (processingStatus === 'failed') {
     return (
       <div style={{ width: "600px" }}>
         <div className="file-upload-error file-upload-md">
@@ -80,7 +115,8 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
     );
   }
 
-  if (uploadStatus === 'ready') {
+  // Processed (ready to download)
+  if (processingStatus === 'processed') {
     return (
       <div style={{ width: "600px" }}>
         <div className="file-upload file-upload-md">
@@ -107,7 +143,7 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
                 <em className="icon">download</em>
               </a>
             ) : (
-              <span className="text-warning align-self-center">Processing complete. Download link not available.</span>
+              <span className="text-success align-self-center">Processing complete. Ready to download.</span>
             )}
             <button className="file-upload-button btn btn-lg btn-flat-light" onClick={onClose}>
               <em className="icon">close</em>
@@ -118,33 +154,8 @@ const UploadStatus = ({ fileName, uploadStatus, fileSize, progress = 0, onClose,
     );
   }
 
-  // Default: uploading
-  return (
-    <div style={{ width: "600px" }}>
-      <div className="file-uploading file-upload-md">
-        <div className="file-uploading-icon">
-          <svg width="38" height="48" viewBox="0 0 38 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M11 22L12.41 23.41L18 17.83V30H20V17.83L25.58 23.42L27 22L19 14L11 22Z" fill="currentColor"></path>
-            <path d="M18 32H20V34H18V32Z" fill="black"></path>
-            <path d="M18 36H20V38H18V36Z" fill="black"></path>
-            <path fillRule="evenodd" clipRule="evenodd" d="M22.1716 2H2V46H36V15.8284L22.1716 2ZM23 0H0V48H38V15L23 0Z" fill="currentColor"></path>
-          </svg>
-        </div>
-        <div className="file-uploading-text">
-          <div className="file-uploading-text-content d-flex justify-content-between">
-            <span className="file-uploading-title">{fileName || "Uploading file..."}</span><br />
-            <span className="file-uploading-size">{progress}%</span>
-          </div>
-          <div className="file-uploading-progress bg-black bg-opacity-10">
-            <div className="h-100 bg-black" style={{ width: `${progress}%` }}></div>
-          </div>
-        </div>
-        <button className="file-uploading-button btn btn-lg btn-flat-light" onClick={onClose}>
-          <em className="icon">close</em>
-        </button>
-      </div>
-    </div>
-  );
+  // Default: nothing
+  return null;
 };
 
 export default UploadStatus;

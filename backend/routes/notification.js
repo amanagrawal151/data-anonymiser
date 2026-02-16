@@ -121,7 +121,7 @@ router.get('/', async (req, res) => {
   try {
     const filter = req.query.user ? { user: req.query.user } : {};
     const notifications = await notificationService.getNotifications(filter);
-    res.json(notifications);
+    res.json(notifications.reverse()); // Return in reverse chronological order
   } catch (err) {
     console.error('[GET /api/notifications] Error:', err);
     res.status(500).json({ error: err.message });

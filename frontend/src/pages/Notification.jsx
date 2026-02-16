@@ -12,7 +12,7 @@ const Notification = () => {
       .then((data) => {
         console.log("[Notification] API response:", data);
         if (Array.isArray(data) && data.length > 0) {
-          setNotifications(data.reverse());
+          setNotifications(data);
         } else {
           console.warn("[Notification] API returned no notifications, using fallback.");
           setNotifications([
@@ -25,7 +25,7 @@ const Notification = () => {
                 "This is a sample notification. Your API is not responding.",
               fileType: "csv",
               cryptForm: "encryption",
-              time: "just now",
+              time: new Date().toISOString(),
               bg: "bg-lvl1",
             },
           ]);
@@ -43,7 +43,7 @@ const Notification = () => {
               "This is a sample notification. Your API is not responding.",
             fileType: "csv",
             cryptForm: "encryption",
-            time: "just now",
+            time: new Date().toISOString(),
             bg: "bg-lvl1",
           },
         ]);
@@ -152,7 +152,7 @@ const Notification = () => {
                       className={`border-bottom border-opacity-40 ${n.bg} d-flex flex-column justify-content-center pe-24px`}
                     >
                       <p className="text-secondary font-weight-medium mb-0 d-none d-lg-block text-end">
-                        {n.time}
+                        {n.time ? new Date(n.time).toLocaleString('en-IN', { hour12: true }) : ""}
                       </p>
                     </div>
                   </Tag>

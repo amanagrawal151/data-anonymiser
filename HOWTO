@@ -1,0 +1,287 @@
+
+Search
+Write
+Sign up
+
+Sign in
+
+
+
+Offline Speech to Text in Python
+Dr. Nimrita Koul
+Dr. Nimrita Koul
+
+Follow
+3 min read
+·
+Feb 2, 2024
+399
+
+
+1
+
+
+
+Press enter or click to view image in full size
+
+Writing, coding, blogging, office work, documentation, reporting all needs one to type on a keyboard. This causes health issues like carpel tunnel syndrome, pain in hands and fingers etc. I know this pain very intimately.
+
+Here is the Python code to create your own dictation program which runs offline. Just speak into your headphone’s mic and it converts your words to text and saves it in a text file.
+
+You will need to install the Python libraries — vosk, pyaudio.
+
+Vosk is a speech recognition toolkit that provides streaming API for accurate speech recognition and speaker identification. It supports 20+ languages and dialects — English, Indian English, German, French, Spanish, Portuguese, Chinese, Russian, Turkish, Vietnamese, Italian, Dutch, Catalan, Arabic, Greek, Farsi, Filipino, Ukrainian, Kazakh, Swedish, Japanese, Esperanto, Hindi, Czech, Polish, Uzbek, Korean, Breton, Gujarati. More to come. It works offline. You can use it on lightweight devices — Raspberry Pi, and mobile phones both Android and iOS. It offers multiple language models ranging from size of 40MB to 16BG. Most small model allow dynamic vocabulary reconfiguration. Big models are static the vocabulary can not be modified in runtime. Check out all the models that can be used with vosk here.
+
+If you want to use the application offline, download the approriate model’s zip file to your computer. Unzip the file and this unzipped folder is used by the program to create the model and generate text. Else if you wish to work online, you can just mention the language in the vock.Model() and the appropriate model is downloaded at runtime. (Code below demonstrates this further.)
+
+You can find many examples to use vosk here.
+
+PyAudio provides Python bindings for PortAudio v19, the cross-platform audio I/O library. With PyAudio, you can easily use Python to play and record audio on a variety of platforms, such as GNU/Linux, Microsoft Windows, and Apple macOS. PyAudio is distributed under the MIT License.
+
+Get Dr. Nimrita Koul’s stories in your inbox
+Join Medium for free to get updates from this writer.
+
+Enter your email
+Subscribe
+I have run this code in Anaconda Python 3.12, in Jupyter Notebook on my Windows 11 PC.
+
+Step 1: Install the libraries
+pip install vosk
+pip install pyaudio
+Step 2: Initialize the model
+import vosk
+import pyaudio
+import json
+
+
+# Here I have downloaded this model to my PC, extracted the files 
+# and saved it in local directory
+# Set the model path
+model_path = "vosk-model-en-us-0.42-gigaspeech"
+# Initialize the model with model-path
+model = vosk.Model(model_path)
+
+
+
+#if you don't want to download the model, just mention "lang" argument 
+#in vosk.Model() and it will download the right  model, here the language is 
+#US-English
+#model = vosk.Model(lang="en-us")
+Step 3: Create a speech recognizer
+Here we create a speech recognizer with the sample rate of 16000 Hz.
+
+# Create a recognizer
+rec = vosk.KaldiRecognizer(model, 16000)
+Step 4: Open the microphone system
+Here we open a stream to capture audio from microphone, we have specified the format, the number of channels, sampling rate, and frames per buffer.
+
+# Open the microphone stream
+p = pyaudio.PyAudio()
+stream = p.open(format=pyaudio.paInt16,
+                channels=1,
+                rate=16000,
+                input=True,
+                frames_per_buffer=8192)
+Step 5: Specify path of the output text file
+# Specify the path for the output text file
+output_file_path = "recognized_text.txt"
+Step 6: Listen to microphone in an infinite loop and write the recognised text to text file. Stop when user says “Terminate’’.
+# Open a text file in write mode using a 'with' block
+with open(output_file_path, "w") as output_file:
+    print("Listening for speech. Say 'Terminate' to stop.")
+    # Start streaming and recognize speech
+    while True:
+        data = stream.read(4096)#read in chunks of 4096 bytes
+        if rec.AcceptWaveform(data):#accept waveform of input voice
+            # Parse the JSON result and get the recognized text
+            result = json.loads(rec.Result())
+            recognized_text = result['text']
+            
+            # Write recognized text to the file
+            output_file.write(recognized_text + "\n")
+            print(recognized_text)
+            
+            # Check for the termination keyword
+            if "terminate" in recognized_text.lower():
+                print("Termination keyword detected. Stopping...")
+                break
+Step 7: Close streams and terminate PyAudio object
+# Stop and close the stream
+stream.stop_stream()
+stream.close()
+
+# Terminate the PyAudio object
+p.terminate()
+There you go. Enjoy, hands free work!!
+
+Python
+Speech To Text Api
+Pyaudio
+Dictation Software
+399
+
+
+1
+
+
+Dr. Nimrita Koul
+Written by Dr. Nimrita Koul
+786 followers
+·
+311 following
+https://www.linkedin.com/in/nimritakoul/
+
+
+Follow
+Responses (1)
+
+Write a response
+
+What are your thoughts?
+
+Cancel
+Respond
+Superada
+Superada
+
+Apr 26, 2024
+
+
+Bravissimo
+17
+
+
+1 reply
+
+Reply
+
+More from Dr. Nimrita Koul
+The Model Context Protocol (MCP) — A Complete Tutorial
+Dr. Nimrita Koul
+Dr. Nimrita Koul
+
+The Model Context Protocol (MCP) — A Complete Tutorial
+Anthropic released the Model Context Protocol(MCP) in Nov. 2024.
+Mar 27
+943
+7
+Computer Vision using OpenCV
+Dr. Nimrita Koul
+Dr. Nimrita Koul
+
+Computer Vision using OpenCV
+In this article, I share some the code for frequent computer vision tasks including the basic ones.
+Sep 4
+3
+Image Processing using OpenCV — Python
+Dr. Nimrita Koul
+Dr. Nimrita Koul
+
+Image Processing using OpenCV — Python
+OpenCV
+Dec 20, 2023
+432
+1
+Context Engineering — Simply Explained
+Dr. Nimrita Koul
+Dr. Nimrita Koul
+
+Context Engineering — Simply Explained
+The effectiveness of LLMs like ChatGPT, Gemini, Claude and that of the applications you develop using these models is determined by the…
+Jun 30
+7
+See all from Dr. Nimrita Koul
+Recommended from Medium
+No Libraries, No Shortcuts: LLM from Scratch with PyTorch
+Towards AI
+In
+
+Towards AI
+
+by
+
+Ashish Abraham
+
+No Libraries, No Shortcuts: LLM from Scratch with PyTorch
+The no BS guide to build, train, and fine-tune a Transformer architecture from scratch
+
+Oct 2
+806
+11
+Learn how to create a functional computer vision application using classical techniques and modern tools.
+Daniel García
+Daniel García
+
+Build Your First Computer Vision App in a Day: A Practical Guide
+
+2d ago
+Google’s Gemini 3 Is Almost Here — And Early Tests Look Seriously Impressive
+Coding Nexus
+In
+
+Coding Nexus
+
+by
+
+Civil Learning
+
+Google’s Gemini 3 Is Almost Here — And Early Tests Look Seriously Impressive
+It seems that Google’s Gemini 3 is finally approaching. If you've been experimenting in AI Studio, you've probably noticed it being…
+
+4d ago
+15
+2
+How to Install UV package manager on Windows, Linux, Mac, and Docker
+Suhas Vaddhiparthy
+Suhas Vaddhiparthy
+
+How to Install UV package manager on Windows, Linux, Mac, and Docker
+A quick guide to installing and using the ultra-fast uv Python package manager across Windows, Linux, macOS, and Docker including commands
+Jun 7
+52
+Docker Is Dead — And It’s About Time
+Abhinav
+Abhinav
+
+Docker Is Dead — And It’s About Time
+Docker changed the game when it launched in 2013, making containers accessible and turning “Dockerize it” into a developer catchphrase.
+
+Jun 9
+6.8K
+192
+Build Your Private Language Model: Local and Specialized For Your Tasks.
+Data Science Collective
+In
+
+Data Science Collective
+
+by
+
+Erdogan T
+
+Build Your Private Language Model: Local and Specialized For Your Tasks.
+A complete step-by-step guide from setup to deployment of local language models, making it private, portable, and shareable, with…
+
+Oct 3
+742
+4
+See more recommendations
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Rules
+
+Terms
+
+Text to speech
